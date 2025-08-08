@@ -5,6 +5,7 @@ import json
 import os
 from datetime import datetime
 from Chatbot import ChatBot
+import tempfile
 
 # Importar librerías para leer diferentes tipos de archivos
 try:
@@ -21,29 +22,46 @@ except ImportError:
     PDF_DISPONIBLE = False
     PyPDF2 = None
 
+# Importar Pillow para manejar imágenes del portapapeles
+try:
+    from PIL import Image, ImageGrab
+    PIL_DISPONIBLE = True
+except ImportError:
+    PIL_DISPONIBLE = False
+    Image = None
+    ImageGrab = None
+
 class ChatBotGUI:
     def __init__(self):
         self.ventana = tk.Tk()
-        self.ventana.title("🤖 ChatBot Assistant - Interfaz Visual")
-        self.ventana.geometry("800x600")
+        self.ventana.title("🤖 Asistente Virtual AI - Análisis Inteligente de Documentos")
+        self.ventana.geometry("900x700")
+        self.ventana.minsize(800, 600)
+        
+        # Configurar icono de la ventana (si tienes un archivo .ico)
+        try:
+            # self.ventana.iconbitmap("icono.ico")  # Descomenta si tienes icono
+            pass
+        except:
+            pass
         
         # Configurar modo tema (True = oscuro, False = claro)
         self.modo_oscuro = False
         
-        self.ventana.configure(bg='#f0f0f0')
+        self.ventana.configure(bg='#f8f9fa')
         
         # Configurar el icono y estilo
         self.configurar_estilo()
         
         # Inicializar el chatbot
-        self.chatbot = ChatBot("ChatBot Assistant")
-        
+        self.chatbot = ChatBot("Asistente Virtual")
+
         # Crear la interfaz
         self.crear_interfaz()
         
-        # Mensaje de bienvenida
-        self.mostrar_mensaje_bot("¡Hola! Soy ChatBot Assistant. ¿En qué puedo ayudarte hoy? 😊")
-        
+        # Mensaje de bienvenida mejorado
+        self.mostrar_mensaje_bot("🎉 ¡Hola! Soy tu Asistente Virtual con IA avanzada. ¿En qué puedo ayudarte hoy? \n\n✨ Puedo analizar documentos, generar casos de prueba, crear manuales de usuario y mucho más. ¡Adjunta archivos o simplemente pregúntame!")
+
         # Configurar evento de cierre
         self.ventana.protocol("WM_DELETE_WINDOW", self.cerrar_aplicacion)
     
@@ -52,49 +70,60 @@ class ChatBotGUI:
         self.style = ttk.Style()
         self.style.theme_use('clam')
         
-        # Definir temas
+        # Definir temas con colores más atractivos y gradientes
         self.temas = {
             'claro': {
-                'fondo_principal': '#f8f9fa',
+                'fondo_principal': '#ffffff',
                 'fondo_ventana': '#ffffff',
-                'fondo_chat': '#ffffff',
-                'fondo_entry': '#ffffff',
-                'fondo_frame': '#f8f9fa',
-                'texto_principal': '#212529',
-                'texto_secundario': '#6c757d',
-                'usuario': '#ffffff',
-                'bot': '#ffffff',
-                'texto_usuario': '#212529',
-                'texto_bot': '#212529',
-                'borde': '#dee2e6',
-                'boton_bg': '#e9ecef',
-                'boton_fg': '#495057',
+                'fondo_chat': '#ffffff',  # Fondo blanco limpio como ChatGPT
+                'fondo_entry': '#f9f9f9',
+                'fondo_frame': '#ffffff',
+                'texto_principal': '#374151',
+                'texto_secundario': '#6b7280',
+                'usuario': '#f7f7f8',  # Fondo sutil para usuario
+                'bot': '#ffffff',      # Fondo blanco para bot
+                'texto_usuario': '#374151',
+                'texto_bot': '#374151',
+                'borde': '#e5e7eb',
+                'boton_bg': '#3b82f6',
+                'boton_fg': '#ffffff',
+                'boton_hover': '#2563eb',
+                'boton_active': '#1d4ed8',
+                'accent': '#ef4444',
+                'success': '#10b981',
+                'warning': '#f59e0b',
                 'tree_bg': '#ffffff',
-                'tree_fg': '#212529',
-                'tree_select': '#e3f2fd'
+                'tree_fg': '#374151',
+                'tree_select': '#3b82f6'
             },
             'oscuro': {
-                'fondo_principal': '#121212',
-                'fondo_ventana': '#1e1e1e',
-                'fondo_chat': '#2d2d2d',
-                'fondo_entry': '#404040',
-                'fondo_frame': '#1e1e1e',
+                'fondo_principal': '#212121',
+                'fondo_ventana': '#212121',
+                'fondo_chat': '#343541',   # Fondo como ChatGPT modo oscuro
+                'fondo_entry': '#40414f',
+                'fondo_frame': '#212121',
                 'texto_principal': '#ffffff',
-                'texto_secundario': '#b0b0b0',
-                'usuario': '#2d2d2d',
-                'bot': '#2d2d2d',
+                'texto_secundario': '#9ca3af',
+                'usuario': '#2f2f2f',      # Fondo sutil para usuario
+                'bot': '#444654',          # Fondo diferente para bot
                 'texto_usuario': '#ffffff',
                 'texto_bot': '#ffffff',
-                'borde': '#404040',
-                'boton_bg': '#404040',
+                'borde': '#4b5563',
+                'boton_bg': '#6366f1',
                 'boton_fg': '#ffffff',
-                'tree_bg': '#2d2d2d',
+                'boton_hover': '#4f46e5',
+                'boton_active': '#4338ca',
+                'accent': '#f87171',
+                'success': '#34d399',
+                'warning': '#fbbf24',
+                'tree_bg': '#444654',
                 'tree_fg': '#ffffff',
-                'tree_select': '#404040'
+                'tree_select': '#6366f1'
             }
         }
         
         self.aplicar_tema()
+        self.configurar_estilos_dinamicos()
     
     def aplicar_tema(self):
         """Aplica el tema actual a todos los componentes"""
@@ -128,11 +157,13 @@ class ChatBotGUI:
         self.style.configure('TLabelFrame', 
                            background=colores['fondo_frame'], 
                            foreground=colores['texto_principal'],
-                           bordercolor=colores['borde'])
+                           bordercolor=colores['boton_bg'],
+                           borderwidth=2,
+                           relief='solid')
         
         self.style.configure('TLabelFrame.Label', 
                            background=colores['fondo_frame'], 
-                           foreground=colores['texto_principal'],
+                           foreground=colores['boton_bg'],
                            font=('Segoe UI', 10, 'bold'))
         
         self.style.configure('TEntry',
@@ -162,6 +193,61 @@ class ChatBotGUI:
         # Guardar colores actuales para componentes personalizados
         self.colores = colores
     
+    def configurar_estilos_dinamicos(self):
+        """Configura estilos dinámicos y animaciones"""
+        # Estilo para botones principales con efectos
+        self.style.configure('Dynamic.TButton',
+                           background=self.colores['boton_bg'],
+                           foreground=self.colores['boton_fg'],
+                           borderwidth=0,
+                           focuscolor='none',
+                           font=('Segoe UI', 10, 'bold'),
+                           padding=(15, 10))
+        
+        # Estilo para botón de enviar (más destacado)
+        self.style.configure('Send.TButton',
+                           background=self.colores['success'],
+                           foreground='white',
+                           borderwidth=0,
+                           focuscolor='none',
+                           font=('Segoe UI', 11, 'bold'),
+                           padding=(20, 12))
+        
+        # Estilo para botón de tema
+        self.style.configure('Theme.TButton',
+                           background=self.colores['accent'],
+                           foreground='white',
+                           borderwidth=0,
+                           focuscolor='none',
+                           font=('Segoe UI', 9, 'bold'),
+                           padding=(12, 8))
+        
+        # Estilo para botones de acción
+        self.style.configure('Action.TButton',
+                           background=self.colores['boton_bg'],
+                           foreground=self.colores['boton_fg'],
+                           borderwidth=0,
+                           focuscolor='none',
+                           font=('Segoe UI', 9),
+                           padding=(10, 6))
+        
+        # Configurar mapas de estado para efectos hover
+        self.style.map('Dynamic.TButton',
+                      background=[('active', self.colores['boton_hover']),
+                                ('pressed', self.colores['boton_active'])])
+        
+        self.style.map('Send.TButton',
+                      background=[('active', '#229954'),
+                                ('pressed', '#1e8449')])
+        
+        self.style.map('Theme.TButton',
+                      background=[('active', '#c0392b'),
+                                ('pressed', '#a93226')])
+        
+        self.style.map('Action.TButton',
+                      background=[('active', self.colores['boton_hover']),
+                                ('pressed', self.colores['boton_active'])])
+    
     def crear_interfaz(self):
         """Crea todos los elementos de la interfaz"""
         # Frame principal
@@ -174,13 +260,45 @@ class ChatBotGUI:
         frame_principal.columnconfigure(0, weight=1)
         frame_principal.rowconfigure(1, weight=1)
         
-        # Título
-        titulo = ttk.Label(
-            frame_principal, 
-            text="🤖 ChatBot Assistant", 
-            font=('Segoe UI', 18, 'bold')
+        # Título con estilo moderno
+        frame_titulo = ttk.Frame(frame_principal)
+        frame_titulo.grid(row=0, column=0, pady=(0, 20), sticky=(tk.W, tk.E))
+        frame_titulo.columnconfigure(1, weight=1)
+        
+        # Icono principal animado
+        titulo_icono = ttk.Label(
+            frame_titulo, 
+            text="🤖", 
+            font=('Segoe UI Emoji', 24)
         )
-        titulo.grid(row=0, column=0, pady=(0, 15))
+        titulo_icono.grid(row=0, column=0, padx=(0, 10))
+        
+        # Título principal
+        titulo = ttk.Label(
+            frame_titulo, 
+            text="Asistente Virtual AI", 
+            font=('Segoe UI', 22, 'bold'),
+            foreground=self.colores['boton_bg']
+        )
+        titulo.grid(row=0, column=1, sticky=(tk.W))
+        
+        # Subtítulo
+        subtitulo = ttk.Label(
+            frame_titulo, 
+            text="🚀 Análisis inteligente de documentos con IA avanzada", 
+            font=('Segoe UI', 11),
+            foreground=self.colores['texto_secundario']
+        )
+        subtitulo.grid(row=1, column=1, sticky=(tk.W), pady=(5, 0))
+        
+        # Indicador de estado IA en el título
+        self.indicador_ia = ttk.Label(
+            frame_titulo,
+            text="✨ IA Activa" if self.chatbot.usar_ia else "⚡ Modo Local",
+            font=('Segoe UI', 9, 'bold'),
+            foreground=self.colores['success'] if self.chatbot.usar_ia else self.colores['warning']
+        )
+        self.indicador_ia.grid(row=0, column=2, padx=(10, 0), sticky=(tk.E))
         
         # Área de chat
         self.crear_area_chat(frame_principal)
@@ -224,28 +342,45 @@ class ChatBotGUI:
     
     def configurar_tags_chat(self):
         """Configura los tags de colores para el chat"""
-        # Configurar tags para estilos de mensajes
+        # Configurar tags para mensajes del usuario (estilo ChatGPT)
+        if self.modo_oscuro:
+            # Modo oscuro: fondo gris para usuario
+            fondo_usuario = '#2d2d2d'
+            texto_usuario = '#ffffff'
+        else:
+            # Modo claro: fondo gris claro para usuario
+            fondo_usuario = '#f7f7f8'
+            texto_usuario = '#343541'
+        
         self.area_chat.tag_configure(
             "usuario",
-            foreground=self.colores['texto_usuario'],
-            font=('Segoe UI', 10, 'bold'),
-            lmargin1=10,
-            lmargin2=10,
-            rmargin=10,
-            spacing1=2,
-            spacing3=2,
+            foreground=texto_usuario,
+            background=fondo_usuario,
+            font=('Segoe UI', 10, 'bold'),  # Negrita para el usuario
+            lmargin1=20,
+            lmargin2=20,
+            rmargin=20,
+            spacing1=8,
+            spacing3=8,
             justify='left'
         )
         
+        # Configurar tags para mensajes del bot (SIN fondo adicional)
+        if self.modo_oscuro:
+            texto_bot = '#ffffff'
+        else:
+            texto_bot = '#374151'
+        
         self.area_chat.tag_configure(
             "bot",
-            foreground=self.colores['texto_bot'],
-            font=('Segoe UI', 10),
-            lmargin1=10,
-            lmargin2=10,
-            rmargin=10,
-            spacing1=2,
-            spacing3=2,
+            foreground=texto_bot,
+            # NO background - usa el fondo del área de chat
+            font=('Segoe UI', 10),  # Normal, sin negrita
+            lmargin1=20,
+            lmargin2=20,
+            rmargin=20,
+            spacing1=8,
+            spacing3=8,
             justify='left'
         )
         
@@ -261,35 +396,74 @@ class ChatBotGUI:
         frame_entrada = ttk.Frame(parent)
         frame_entrada.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
         frame_entrada.columnconfigure(0, weight=1)
+        frame_entrada.rowconfigure(0, weight=1)
         
-        # Entry para escribir mensajes
-        self.entrada_texto = ttk.Entry(
-            frame_entrada,
+        # Frame para el área de texto de entrada
+        frame_texto = ttk.Frame(frame_entrada)
+        frame_texto.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 10))
+        frame_texto.columnconfigure(0, weight=1)
+        frame_texto.rowconfigure(0, weight=1)
+        
+        # Text widget para escribir mensajes (permite múltiples líneas)
+        self.entrada_texto = tk.Text(
+            frame_texto,
             font=('Segoe UI', 11),
-            width=50
+            height=3,  # Altura inicial de 3 líneas
+            width=50,
+            wrap=tk.WORD,
+            bg=self.colores['fondo_entry'],
+            fg=self.colores['texto_principal'],
+            insertbackground=self.colores['texto_principal'],
+            borderwidth=1,
+            relief=tk.SOLID,
+            undo=True,  # Habilitar funcionalidad de deshacer
+            maxundo=50  # Máximo de 50 operaciones de deshacer
         )
-        self.entrada_texto.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 10))
+        self.entrada_texto.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 5))
         
-        # Botón adjuntar archivos
+        # Scrollbar para el área de entrada
+        scroll_entrada = ttk.Scrollbar(frame_texto, orient=tk.VERTICAL, command=self.entrada_texto.yview)
+        self.entrada_texto.configure(yscrollcommand=scroll_entrada.set)
+        scroll_entrada.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        
+        # Botón adjuntar archivos con estilo
         self.boton_adjuntar = ttk.Button(
             frame_entrada,
             text="📎 Adjuntar",
-            command=self.adjuntar_archivo
+            command=self.adjuntar_archivo,
+            style='Action.TButton'
         )
-        self.boton_adjuntar.grid(row=0, column=1, padx=(0, 10))
+        self.boton_adjuntar.grid(row=0, column=1, padx=(0, 10), sticky=(tk.N))
         
-        # Botón enviar
+        # Botón enviar con estilo destacado
         self.boton_enviar = ttk.Button(
             frame_entrada,
-            text="📤 Enviar",
+            text="� Enviar",
             command=self.enviar_mensaje,
-            style='Accent.TButton'
+            style='Send.TButton'
         )
-        self.boton_enviar.grid(row=0, column=2)
+        self.boton_enviar.grid(row=0, column=2, sticky=(tk.N))
         
-        # Bind Enter key
-        self.entrada_texto.bind('<Return>', lambda event: self.enviar_mensaje())
+        # Bind teclas
+        self.entrada_texto.bind('<Return>', self.manejar_enter)
+        self.entrada_texto.bind('<Shift-Return>', self.manejar_shift_enter)
+        
+        # Atajos de teclado estándar
+        self.configurar_atajos_teclado()
+        
+        # Menú contextual (clic derecho)
+        self.configurar_menu_contextual()
+        
         self.entrada_texto.focus()
+        
+        # Etiqueta de ayuda con mejor estilo
+        label_ayuda = ttk.Label(
+            frame_entrada,
+            text="💡 Enter: Enviar | Shift+Enter: Nueva línea | Ctrl+V: Pegar imagen | Ctrl+Shift+L: Limpiar",
+            font=('Segoe UI', 9, 'italic'),
+            foreground=self.colores['texto_secundario']
+        )
+        label_ayuda.grid(row=1, column=0, columnspan=3, sticky=(tk.W), pady=(8, 0))
     
     def crear_area_adjuntos(self, parent):
         """Crea el área para mostrar archivos adjuntos"""
@@ -308,23 +482,15 @@ class ChatBotGUI:
         )
         self.lista_adjuntos.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 10))
         
-        # Frame para botones de adjuntos
-        frame_botones_adj = ttk.Frame(self.frame_adjuntos)
-        frame_botones_adj.grid(row=0, column=1, sticky=(tk.N))
+        # Frame para botón de adjuntos
+        frame_boton_adj = ttk.Frame(self.frame_adjuntos)
+        frame_boton_adj.grid(row=0, column=1, sticky=(tk.N))
         
-        # Botón quitar archivo
-        self.boton_quitar = ttk.Button(
-            frame_botones_adj,
-            text="🗑️ Quitar",
-            command=self.quitar_archivo_adjunto
-        )
-        self.boton_quitar.pack(pady=(0, 5))
-        
-        # Botón limpiar todos
+        # Botón limpiar todos (único botón)
         self.boton_limpiar_adj = ttk.Button(
-            frame_botones_adj,
-            text="🧹 Limpiar",
-            command=self.limpiar_adjuntos
+            frame_boton_adj,
+            text="🧹 Limpiar Adjuntos",
+            command=self.limpiar_adjuntos_y_texto
         )
         self.boton_limpiar_adj.pack()
         
@@ -335,84 +501,142 @@ class ChatBotGUI:
         self.frame_adjuntos.grid_remove()
     
     def crear_botones(self, parent):
-        """Crea botones adicionales"""
+        """Crea botones adicionales con estilo moderno"""
         frame_botones = ttk.Frame(parent)
-        frame_botones.grid(row=4, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
+        frame_botones.grid(row=4, column=0, sticky=(tk.W, tk.E), pady=(15, 10))
         
-        # Botón limpiar chat
+        # Crear dos filas de botones para mejor organización
+        frame_botones_top = ttk.Frame(frame_botones)
+        frame_botones_top.pack(fill=tk.X, pady=(0, 10))
+        
+        frame_botones_bottom = ttk.Frame(frame_botones)
+        frame_botones_bottom.pack(fill=tk.X)
+        
+        # Primera fila - Botones principales
         boton_limpiar = ttk.Button(
-            frame_botones,
-            text="🗑️ Limpiar Chat",
-            command=self.limpiar_chat
+            frame_botones_top,
+            text="🧹 Limpiar Chat",
+            command=self.limpiar_chat,
+            style='Dynamic.TButton'
         )
-        boton_limpiar.pack(side=tk.LEFT, padx=(0, 10))
+        boton_limpiar.pack(side=tk.LEFT, padx=(0, 15))
         
-        # Botón ver historial
         boton_historial = ttk.Button(
-            frame_botones,
-            text="📂 Ver Historial",
-            command=self.abrir_ventana_historial
+            frame_botones_top,
+            text="� Historial",
+            command=self.abrir_ventana_historial,
+            style='Dynamic.TButton'
         )
-        boton_historial.pack(side=tk.LEFT, padx=(0, 10))
+        boton_historial.pack(side=tk.LEFT, padx=(0, 15))
         
-        # Botón guardar conversación
         boton_guardar = ttk.Button(
-            frame_botones,
+            frame_botones_top,
             text="💾 Guardar",
-            command=self.guardar_conversacion_actual
+            command=self.guardar_conversacion_actual,
+            style='Dynamic.TButton'
         )
-        boton_guardar.pack(side=tk.LEFT, padx=(0, 10))
+        boton_guardar.pack(side=tk.LEFT, padx=(0, 15))
         
-        # Botón ayuda
-        boton_ayuda = ttk.Button(
-            frame_botones,
-            text="❓ Ayuda",
-            command=self.mostrar_ayuda
-        )
-        boton_ayuda.pack(side=tk.LEFT, padx=(0, 10))
-        
-        # Botón cambiar tema
+        # Botón cambiar tema con animación
         self.boton_tema = ttk.Button(
-            frame_botones,
+            frame_botones_top,
             text="🌙 Modo Oscuro" if not self.modo_oscuro else "☀️ Modo Claro",
-            command=self.cambiar_tema
+            command=self.cambiar_tema_animado,
+            style='Theme.TButton'
         )
-        self.boton_tema.pack(side=tk.LEFT, padx=(0, 10))
+        self.boton_tema.pack(side=tk.RIGHT, padx=(15, 0))
         
-        # Indicador de estado IA
+        # Segunda fila - Botones secundarios
+        boton_ayuda = ttk.Button(
+            frame_botones_bottom,
+            text="❓ Ayuda & Tips",
+            command=self.mostrar_ayuda,
+            style='Action.TButton'
+        )
+        boton_ayuda.pack(side=tk.LEFT, padx=(0, 15))
+        
+        # Estadísticas en tiempo real
+        self.label_stats = ttk.Label(
+            frame_botones_bottom,
+            text="💬 0 mensajes en esta sesión",
+            font=('Segoe UI', 9),
+            foreground=self.colores['texto_secundario']
+        )
+        self.label_stats.pack(side=tk.LEFT, padx=(15, 0))
+        
+        # Indicador de estado IA mejorado
         self.label_ia = ttk.Label(
-            frame_botones,
-            text="✅ IA Conectada" if self.chatbot.usar_ia else "⚠️ Solo Local",
-            foreground="green" if self.chatbot.usar_ia else "orange"
+            frame_botones_bottom,
+            text="✨ IA Gemini 2.0 Flash" if self.chatbot.usar_ia else "⚡ Modo Offline",
+            foreground=self.colores['success'] if self.chatbot.usar_ia else self.colores['warning'],
+            font=('Segoe UI', 9, 'bold')
         )
         self.label_ia.pack(side=tk.RIGHT)
     
     def crear_status_bar(self, parent):
-        """Crea la barra de estado"""
-        self.status_var = tk.StringVar()
-        self.status_var.set("Listo para conversar")
+        """Crea la barra de estado mejorada"""
+        frame_status = ttk.Frame(parent)
+        frame_status.grid(row=5, column=0, sticky=(tk.W, tk.E), pady=(10, 0))
+        frame_status.columnconfigure(1, weight=1)
         
-        status_bar = ttk.Label(
-            parent,
-            textvariable=self.status_var,
-            relief=tk.SUNKEN,
-            anchor=tk.W,
-            font=('Segoe UI', 9)
+        # Icono de estado
+        self.status_icono = ttk.Label(
+            frame_status,
+            text="🟢",
+            font=('Segoe UI Emoji', 12)
         )
-        status_bar.grid(row=5, column=0, sticky=(tk.W, tk.E))
+        self.status_icono.grid(row=0, column=0, padx=(0, 8))
+        
+        # Mensaje de estado principal
+        self.status_var = tk.StringVar()
+        self.status_var.set("🚀 Sistema listo - ¡Comienza a conversar!")
+        
+        status_label = ttk.Label(
+            frame_status,
+            textvariable=self.status_var,
+            font=('Segoe UI', 10, 'bold'),
+            foreground=self.colores['texto_principal']
+        )
+        status_label.grid(row=0, column=1, sticky=(tk.W))
+        
+        # Información del sistema
+        info_sistema = f"Python AI Assistant v2.0 | {datetime.now().strftime('%d/%m/%Y')}"
+        info_label = ttk.Label(
+            frame_status,
+            text=info_sistema,
+            font=('Segoe UI', 8),
+            foreground=self.colores['texto_secundario']
+        )
+        info_label.grid(row=0, column=2, sticky=(tk.E))
     
-    def cambiar_tema(self):
-        """Cambia entre modo claro y oscuro"""
+    def cambiar_tema_animado(self):
+        """Cambia entre modo claro y oscuro con animación"""
+        # Cambiar estado
         self.modo_oscuro = not self.modo_oscuro
         
-        # Actualizar texto del botón
-        self.boton_tema.configure(
-            text="☀️ Modo Claro" if self.modo_oscuro else "🌙 Modo Oscuro"
-        )
+        # Actualizar texto del botón con animación
+        nuevo_texto = "☀️ Modo Claro" if self.modo_oscuro else "🌙 Modo Oscuro"
+        self.boton_tema.configure(text="🔄 Cambiando...")
         
-        # Aplicar nuevo tema
-        self.aplicar_tema()
+        # Simular animación con after
+        def aplicar_cambios():
+            self.boton_tema.configure(text=nuevo_texto)
+            self.aplicar_tema()
+            self.configurar_estilos_dinamicos()
+            self.actualizar_todos_los_componentes()
+            
+            # Mensaje de confirmación animado
+            tema_nombre = "Oscuro 🌙" if self.modo_oscuro else "Claro ☀️"
+            self.status_var.set(f"✨ Tema {tema_nombre} aplicado exitosamente")
+            
+            # Regresar al estado normal después de 2 segundos
+            self.ventana.after(2000, lambda: self.status_var.set("Listo para conversar"))
         
+        # Aplicar cambios después de un breve delay para efecto visual
+        self.ventana.after(300, aplicar_cambios)
+    
+    def actualizar_todos_los_componentes(self):
+        """Actualiza todos los componentes con el nuevo tema"""
         # Actualizar área de chat
         self.area_chat.configure(
             bg=self.colores['fondo_chat'],
@@ -421,15 +645,51 @@ class ChatBotGUI:
             selectbackground=self.colores['borde']
         )
         
-        # Reconfigurar tags
+        # Actualizar área de entrada de texto
+        if hasattr(self, 'entrada_texto'):
+            self.entrada_texto.configure(
+                bg=self.colores['fondo_entry'],
+                fg=self.colores['texto_principal'],
+                insertbackground=self.colores['texto_principal'],
+                selectbackground=self.colores['borde']
+            )
+        
+        # Reconfigurar tags del chat
         self.configurar_tags_chat()
         
         # Actualizar colores del área de adjuntos
         self.actualizar_colores_adjuntos()
         
-        # Actualizar status
-        tema_nombre = "Oscuro" if self.modo_oscuro else "Claro"
-        self.status_var.set(f"✨ Tema {tema_nombre} aplicado")
+        # Actualizar indicadores de estado
+        if hasattr(self, 'label_ia'):
+            self.label_ia.configure(
+                foreground=self.colores['success'] if self.chatbot.usar_ia else self.colores['warning']
+            )
+        
+        if hasattr(self, 'indicador_ia'):
+            self.indicador_ia.configure(
+                foreground=self.colores['success'] if self.chatbot.usar_ia else self.colores['warning']
+            )
+        
+        if hasattr(self, 'label_stats'):
+            self.label_stats.configure(foreground=self.colores['texto_secundario'])
+    
+    def actualizar_estadisticas(self):
+        """Actualiza las estadísticas en tiempo real"""
+        if hasattr(self, 'label_stats'):
+            total_mensajes = len(self.chatbot.sesion_actual['conversaciones'])
+            if total_mensajes == 0:
+                texto = "💬 Listo para conversar"
+            elif total_mensajes == 1:
+                texto = "💬 1 mensaje en esta sesión"
+            else:
+                texto = f"💬 {total_mensajes} mensajes en esta sesión"
+            
+            self.label_stats.configure(text=texto)
+    
+    def cambiar_tema(self):
+        """Método de compatibilidad - redirige al método animado"""
+        self.cambiar_tema_animado()
     
     def adjuntar_archivo(self):
         """Permite adjuntar archivos o imágenes"""
@@ -478,11 +738,48 @@ class ChatBotGUI:
             
             self.status_var.set(f"📎 {len(self.archivos_adjuntos)} archivo(s) adjunto(s)")
     
+    def limpiar_adjuntos_y_texto(self):
+        """Limpia todos los archivos adjuntos sin tocar el texto del usuario"""
+        # Limpiar archivos temporales de imágenes pegadas
+        self.limpiar_archivos_temporales_actuales()
+        
+        # Limpiar lista de adjuntos
+        self.archivos_adjuntos.clear()
+        self.lista_adjuntos.delete(0, tk.END)
+        
+        # Ocultar frame de adjuntos
+        self.frame_adjuntos.grid_remove()
+        self.status_var.set("Listo para conversar")
+    
+    def limpiar_archivos_temporales_actuales(self):
+        """Limpia solo los archivos temporales de la sesión actual"""
+        try:
+            for archivo in self.archivos_adjuntos[:]:  # Copia la lista para iterar
+                if "imagen_pegada_" in os.path.basename(archivo):
+                    try:
+                        if os.path.exists(archivo):
+                            os.remove(archivo)
+                    except:
+                        pass  # Si no se puede eliminar, continuar
+        except:
+            pass
+    
     def quitar_archivo_adjunto(self):
         """Quita el archivo seleccionado de la lista"""
         seleccion = self.lista_adjuntos.curselection()
         if seleccion:
             indice = seleccion[0]
+            archivo_a_quitar = self.archivos_adjuntos[indice]
+            
+            # Si es un archivo temporal de imagen pegada, eliminarlo del disco
+            if "imagen_pegada_" in os.path.basename(archivo_a_quitar):
+                try:
+                    if os.path.exists(archivo_a_quitar):
+                        os.remove(archivo_a_quitar)
+                except:
+                    pass
+            
+            # Quitar de la lista
             self.lista_adjuntos.delete(indice)
             del self.archivos_adjuntos[indice]
             
@@ -642,9 +939,234 @@ class ChatBotGUI:
         """Muestra un mensaje del usuario"""
         self.mostrar_mensaje(mensaje, "usuario")
     
+    def configurar_menu_contextual(self):
+        """Configura el menú contextual (clic derecho) para el área de entrada"""
+        self.menu_contextual = tk.Menu(self.entrada_texto, tearoff=0)
+        
+        # Opciones del menú
+        self.menu_contextual.add_command(label="🔄 Deshacer", command=self.deshacer, accelerator="Ctrl+Z")
+        self.menu_contextual.add_command(label="↩️ Rehacer", command=self.rehacer, accelerator="Ctrl+Y")
+        self.menu_contextual.add_separator()
+        self.menu_contextual.add_command(label="✂️ Cortar", command=self.cortar, accelerator="Ctrl+X")
+        self.menu_contextual.add_command(label="📋 Copiar", command=self.copiar, accelerator="Ctrl+C")
+        self.menu_contextual.add_command(label="📝 Pegar texto/imagen", command=self.pegar, accelerator="Ctrl+V")
+        self.menu_contextual.add_separator()
+        self.menu_contextual.add_command(label="🎯 Seleccionar todo", command=self.seleccionar_todo, accelerator="Ctrl+A")
+        self.menu_contextual.add_command(label="🗑️ Limpiar texto", command=self.limpiar_entrada, accelerator="Ctrl+L")
+        self.menu_contextual.add_command(label="🧹 Limpiar adjuntos", command=self.limpiar_adjuntos_y_texto, accelerator="Ctrl+Shift+L")
+        
+        # Bind clic derecho
+        self.entrada_texto.bind("<Button-3>", self.mostrar_menu_contextual)
+    
+    def mostrar_menu_contextual(self, event):
+        """Muestra el menú contextual en la posición del cursor"""
+        try:
+            # Actualizar estado de opciones según contexto
+            tiene_seleccion = False
+            try:
+                if self.entrada_texto.selection_get():
+                    tiene_seleccion = True
+            except tk.TclError:
+                pass
+            
+            tiene_texto = len(self.entrada_texto.get("1.0", tk.END).strip()) > 0
+            
+            # Habilitar/deshabilitar opciones según contexto
+            self.menu_contextual.entryconfig("✂️ Cortar", state="normal" if tiene_seleccion else "disabled")
+            self.menu_contextual.entryconfig("📋 Copiar", state="normal" if tiene_seleccion else "disabled")
+            self.menu_contextual.entryconfig("🗑️ Limpiar", state="normal" if tiene_texto else "disabled")
+            
+            # Verificar si hay algo en el portapapeles (texto o imagen)
+            puede_pegar = False
+            try:
+                # Verificar texto
+                self.entrada_texto.clipboard_get()
+                puede_pegar = True
+            except tk.TclError:
+                pass
+            
+            # Verificar imagen en portapapeles si PIL está disponible
+            if not puede_pegar and PIL_DISPONIBLE:
+                try:
+                    imagen = ImageGrab.grabclipboard()
+                    if imagen is not None and isinstance(imagen, Image.Image):
+                        puede_pegar = True
+                except:
+                    pass
+            
+            self.menu_contextual.entryconfig("📝 Pegar", state="normal" if puede_pegar else "disabled")
+            
+            # Mostrar menú
+            self.menu_contextual.post(event.x_root, event.y_root)
+        except Exception as e:
+            print(f"Error en menú contextual: {e}")
+    
+    def configurar_atajos_teclado(self):
+        """Configura los atajos de teclado estándar para el área de entrada"""
+        # Atajos de edición estándar
+        self.entrada_texto.bind('<Control-z>', self.deshacer)
+        self.entrada_texto.bind('<Control-Z>', self.deshacer)
+        self.entrada_texto.bind('<Control-y>', self.rehacer)
+        self.entrada_texto.bind('<Control-Y>', self.rehacer)
+        
+        # Atajos de portapapeles
+        self.entrada_texto.bind('<Control-c>', self.copiar)
+        self.entrada_texto.bind('<Control-C>', self.copiar)
+        self.entrada_texto.bind('<Control-v>', self.pegar)
+        self.entrada_texto.bind('<Control-V>', self.pegar)
+        self.entrada_texto.bind('<Control-x>', self.cortar)
+        self.entrada_texto.bind('<Control-X>', self.cortar)
+        
+        # Atajos de selección
+        self.entrada_texto.bind('<Control-a>', self.seleccionar_todo)
+        self.entrada_texto.bind('<Control-A>', self.seleccionar_todo)
+        
+        # Atajos adicionales útiles
+        self.entrada_texto.bind('<Control-l>', self.limpiar_entrada)
+        self.entrada_texto.bind('<Control-L>', self.limpiar_entrada)
+        self.entrada_texto.bind('<Control-Shift-L>', self.limpiar_adjuntos_y_texto)
+        self.entrada_texto.bind('<Control-Shift-l>', self.limpiar_adjuntos_y_texto)
+        
+        # Navegación rápida
+        self.entrada_texto.bind('<Control-Home>', self.ir_inicio)
+        self.entrada_texto.bind('<Control-End>', self.ir_final)
+    
+    def deshacer(self, event=None):
+        """Deshace la última acción"""
+        try:
+            self.entrada_texto.edit_undo()
+        except tk.TclError:
+            pass  # No hay nada que deshacer
+        return "break"
+    
+    def rehacer(self, event=None):
+        """Rehace la última acción deshecha"""
+        try:
+            self.entrada_texto.edit_redo()
+        except tk.TclError:
+            pass  # No hay nada que rehacer
+        return "break"
+    
+    def copiar(self, event=None):
+        """Copia el texto seleccionado al portapapeles"""
+        try:
+            if self.entrada_texto.selection_get():
+                self.entrada_texto.clipboard_clear()
+                self.entrada_texto.clipboard_append(self.entrada_texto.selection_get())
+        except tk.TclError:
+            pass  # No hay selección
+        return "break"
+    
+    def pegar(self, event=None):
+        """Pega texto o imágenes del portapapeles"""
+        try:
+            # Primero intentar pegar imagen del portapapeles
+            if PIL_DISPONIBLE and self.pegar_imagen_portapapeles():
+                return "break"
+            
+            # Si no hay imagen, pegar texto normal
+            cursor_pos = self.entrada_texto.index(tk.INSERT)
+            texto_portapapeles = self.entrada_texto.clipboard_get()
+            self.entrada_texto.insert(cursor_pos, texto_portapapeles)
+        except tk.TclError:
+            pass  # Portapapeles vacío o error
+        return "break"
+    
+    def pegar_imagen_portapapeles(self):
+        """Intenta pegar una imagen del portapapeles como archivo adjunto"""
+        try:
+            if not PIL_DISPONIBLE:
+                return False
+            
+            # Intentar obtener imagen del portapapeles
+            imagen = ImageGrab.grabclipboard()
+            
+            if imagen is not None and isinstance(imagen, Image.Image):
+                # Crear nombre único para el archivo temporal
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]  # Incluir microsegundos
+                nombre_archivo = f"imagen_pegada_{timestamp}.png"
+                
+                # Crear directorio temporal si no existe
+                temp_dir = os.path.join(tempfile.gettempdir(), "chatbot_imagenes")
+                os.makedirs(temp_dir, exist_ok=True)
+                
+                # Guardar imagen como archivo temporal
+                ruta_temporal = os.path.join(temp_dir, nombre_archivo)
+                imagen.save(ruta_temporal, "PNG")
+                
+                # Verificar que el archivo no esté ya en la lista
+                if ruta_temporal not in self.archivos_adjuntos:
+                    self.archivos_adjuntos.append(ruta_temporal)
+                    self.lista_adjuntos.insert(tk.END, f"🖼️ {nombre_archivo} (pegada)")
+                    
+                    # Mostrar el área de adjuntos
+                    self.frame_adjuntos.grid()
+                    self.actualizar_colores_adjuntos()
+                    
+                    # Actualizar status
+                    self.status_var.set(f"📎 Imagen pegada - {len(self.archivos_adjuntos)} archivo(s) adjunto(s)")
+                    
+                    # NO insertar texto de referencia en el área de texto
+                
+                return True
+            
+            return False
+            
+        except Exception as e:
+            print(f"Error al pegar imagen: {e}")
+            return False
+    
+    def cortar(self, event=None):
+        """Corta el texto seleccionado"""
+        try:
+            if self.entrada_texto.selection_get():
+                # Copiar al portapapeles
+                self.entrada_texto.clipboard_clear()
+                self.entrada_texto.clipboard_append(self.entrada_texto.selection_get())
+                # Eliminar selección
+                self.entrada_texto.delete(tk.SEL_FIRST, tk.SEL_LAST)
+        except tk.TclError:
+            pass  # No hay selección
+        return "break"
+    
+    def seleccionar_todo(self, event=None):
+        """Selecciona todo el texto"""
+        self.entrada_texto.tag_add(tk.SEL, "1.0", tk.END)
+        self.entrada_texto.mark_set(tk.INSERT, "1.0")
+        self.entrada_texto.see(tk.INSERT)
+        return "break"
+    
+    def limpiar_entrada(self, event=None):
+        """Limpia toda el área de entrada (Ctrl+L)"""
+        self.entrada_texto.delete("1.0", tk.END)
+        return "break"
+    
+    def ir_inicio(self, event=None):
+        """Va al inicio del texto (Ctrl+Home)"""
+        self.entrada_texto.mark_set(tk.INSERT, "1.0")
+        self.entrada_texto.see(tk.INSERT)
+        return "break"
+    
+    def ir_final(self, event=None):
+        """Va al final del texto (Ctrl+End)"""
+        self.entrada_texto.mark_set(tk.INSERT, tk.END)
+        self.entrada_texto.see(tk.INSERT)
+        return "break"
+    
+    def manejar_enter(self, event):
+        """Maneja la tecla Enter (envía el mensaje)"""
+        self.enviar_mensaje()
+        return "break"  # Evita que se agregue una nueva línea
+    
+    def manejar_shift_enter(self, event):
+        """Maneja Shift+Enter (nueva línea)"""
+        # No hacer nada especial, permitir el comportamiento por defecto
+        return None
+    
     def enviar_mensaje(self):
         """Envía un mensaje al chatbot"""
-        mensaje = self.entrada_texto.get().strip()
+        # Obtener todo el contenido del Text widget
+        mensaje = self.entrada_texto.get("1.0", tk.END).strip()
         
         # Verificar si hay mensaje o archivos adjuntos
         if not mensaje and not self.archivos_adjuntos:
@@ -655,7 +1177,7 @@ class ChatBotGUI:
             mensaje = "Por favor, analiza los archivos adjuntos."
         
         # Limpiar entrada
-        self.entrada_texto.delete(0, tk.END)
+        self.entrada_texto.delete("1.0", tk.END)
         
         # Procesar archivos adjuntos si los hay
         contenido_adjuntos = ""
@@ -680,7 +1202,14 @@ class ChatBotGUI:
         # Deshabilitar botón mientras procesa
         self.boton_enviar.configure(state='disabled')
         self.boton_adjuntar.configure(state='disabled')
-        self.status_var.set("🤔 Analizando archivos y generando respuesta...")
+        
+        # Status dinámico según el tipo de consulta
+        if self.archivos_adjuntos:
+            self.status_var.set("🔍 Analizando archivos adjuntos con IA...")
+            self.status_icono.configure(text="🔄")
+        else:
+            self.status_var.set("🤔 Generando respuesta inteligente...")
+            self.status_icono.configure(text="🧠")
         
         # Procesar mensaje en hilo separado
         threading.Thread(
@@ -738,8 +1267,23 @@ class ChatBotGUI:
         self.mostrar_mensaje_bot(respuesta)
         self.boton_enviar.configure(state='normal')
         self.boton_adjuntar.configure(state='normal')
-        self.status_var.set("Listo para conversar")
+        
+        # Actualizar estadísticas
+        self.actualizar_estadisticas()
+        
+        # Status con animación
+        self.status_var.set("✨ Respuesta generada exitosamente")
+        self.status_icono.configure(text="✅")
+        
+        # Regresar al estado normal después de 2 segundos
+        self.ventana.after(2000, self.restablecer_status_normal)
+        
         self.entrada_texto.focus()
+    
+    def restablecer_status_normal(self):
+        """Restablece el status a normal"""
+        self.status_var.set("🚀 Listo para la siguiente consulta")
+        self.status_icono.configure(text="🟢")
     
     def limpiar_chat(self):
         """Limpia el área de chat"""
@@ -947,7 +1491,7 @@ class ChatBotGUI:
             
             # Crear contenido de texto
             inicio = datetime.fromisoformat(sesion['inicio'])
-            contenido = f"Conversación con ChatBot Assistant\n"
+            contenido = f"Conversación con Asistente Virtual\n"
             contenido += f"Fecha: {inicio.strftime('%Y-%m-%d %H:%M:%S')}\n"
             contenido += f"Total de mensajes: {len(sesion['conversaciones'])}\n"
             contenido += "=" * 50 + "\n\n"
@@ -1006,7 +1550,7 @@ class ChatBotGUI:
         try:
             # Crear contenido de texto
             inicio = datetime.fromisoformat(self.chatbot.sesion_actual['inicio'])
-            contenido = f"Conversación Actual con ChatBot Assistant\n"
+            contenido = f"Conversación Actual con Asistente Virtual\n"
             contenido += f"Fecha: {inicio.strftime('%Y-%m-%d %H:%M:%S')}\n"
             contenido += f"Total de mensajes: {len(self.chatbot.sesion_actual['conversaciones'])}\n"
             contenido += "=" * 50 + "\n\n"
@@ -1037,12 +1581,31 @@ class ChatBotGUI:
     def mostrar_ayuda(self):
         """Muestra información de ayuda"""
         ayuda_texto = """
-🤖 ChatBot Assistant - Ayuda
+🤖 Asistente Virtual - Ayuda
 
+ENTRADA DE TEXTO:
 • Escribe tu pregunta y presiona Enter o clic en 'Enviar'
-• Puedo responder preguntas sobre cualquier tema
-• Uso IA avanzada para darte respuestas inteligentes
+• Shift+Enter: Nueva línea para texto multilínea
 • Escribe 'salir' para cerrar la aplicación
+
+⌨️ ATAJOS DE TECLADO:
+• Ctrl+Z: Deshacer última acción
+• Ctrl+Y: Rehacer acción deshecha
+• Ctrl+C: Copiar texto seleccionado
+• Ctrl+V: Pegar texto o imágenes desde portapapeles
+• Ctrl+X: Cortar texto seleccionado
+• Ctrl+A: Seleccionar todo el texto
+• Ctrl+L: Limpiar solo el área de entrada
+• Ctrl+Shift+L: Limpiar solo archivos adjuntos
+• Ctrl+Home: Ir al inicio del texto
+• Ctrl+End: Ir al final del texto
+• Clic derecho: Menú contextual con opciones
+
+📋 PEGAR IMÁGENES:
+• Copia cualquier imagen (Ctrl+C en navegador, captura de pantalla, etc.)
+• Pega directamente en el área de texto con Ctrl+V
+• La imagen se adjunta automáticamente sin alterar tu texto
+• Usa "Limpiar Adjuntos" para eliminar solo las imágenes pegadas
 
 Funciones disponibles:
 ✨ Respuestas inteligentes con IA
@@ -1054,11 +1617,11 @@ Funciones disponibles:
 🌙/☀️ Modo oscuro y claro
 🎨 Interfaz elegante y adaptable
 
-📎 NUEVA FUNCIONALIDAD - Archivos Adjuntos:
+📎 ARCHIVOS ADJUNTOS:
 • Adjunta documentos (.txt, .docx, .pdf)
 • Adjunta imágenes (.png, .jpg, .jpeg, .gif, .bmp)
 • Adjunta datos (.json, .xml, .csv)
-• ✨ NUEVO: Lectura completa de archivos Word (.docx)
+• ✨ Lectura completa de archivos Word (.docx)
 • Extracción automática de texto y tablas
 
 🎯 SOLICITUDES ESPECÍFICAS:
@@ -1068,13 +1631,38 @@ Funciones disponibles:
 • "Revisa el documento" - Revisión general
 • Sé específico en tu solicitud para mejores resultados
 
+🎭 ROLES PROFESIONALES DISPONIBLES:
+• "Actúa como experto en QA" - Especialista en testing y casos de prueba
+• "Actúa como arquitecto de software" - Diseño de arquitecturas
+• "Actúa como analista de negocio" - Análisis de procesos y requisitos
+• "Actúa como desarrollador senior" - Revisión y mejores prácticas de código
+• "Actúa como consultor técnico" - Guidance experto y recomendaciones
+
 ¡Pregúntame lo que quieras y adjunta archivos para análisis!
         """
-        messagebox.showinfo("Ayuda - ChatBot Assistant", ayuda_texto)
+        messagebox.showinfo("Ayuda - Asistente Virtual", ayuda_texto)
+
+    def limpiar_archivos_temporales(self):
+        """Limpia archivos temporales de imágenes pegadas"""
+        try:
+            temp_dir = os.path.join(tempfile.gettempdir(), "chatbot_imagenes")
+            if os.path.exists(temp_dir):
+                for archivo in os.listdir(temp_dir):
+                    if archivo.startswith("imagen_pegada_"):
+                        ruta_archivo = os.path.join(temp_dir, archivo)
+                        try:
+                            os.remove(ruta_archivo)
+                        except:
+                            pass  # Si no se puede eliminar, continuar
+        except:
+            pass  # Si hay error, no importa
     
     def cerrar_aplicacion(self):
         """Cierra la aplicación guardando la sesión"""
         try:
+            # Limpiar archivos temporales
+            self.limpiar_archivos_temporales()
+            
             # Guardar sesión actual si hay conversaciones
             if len(self.chatbot.sesion_actual['conversaciones']) > 0:
                 archivo_guardado = self.chatbot.guardar_sesion_completa()

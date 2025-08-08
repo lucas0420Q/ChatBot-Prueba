@@ -93,6 +93,13 @@ class ChatBot:
                 "¿Tienes documentos de requisitos? Puedo crear casos de prueba desde ellos."
             ],
             
+            # Manuales de usuario
+            "manual de usuario|manual usuario|documentacion usuario|guia usuario": [
+                "¡Excelente! Puedo generar manuales de usuario siguiendo estructuras específicas.",
+                "Especializado en documentación de usuario. Adjunta tu información y genero el manual.",
+                "¿Tienes información del sistema? Puedo crear un manual de usuario completo."
+            ],
+            
             # Resumen de documentos
             "resumen|resumir|resume": [
                 "Puedo hacer resúmenes claros y concisos de tus documentos.",
@@ -170,11 +177,145 @@ class ChatBot:
         # Si no encuentra coincidencia, usar respuesta por defecto
         return random.choice(self.respuestas_default)
     
+    def obtener_plantilla_casos_prueba(self):
+        """Retorna la plantilla estándar para casos de prueba"""
+        return """
+IMPORTANTE: Todos los casos de prueba deben seguir EXACTAMENTE esta estructura:
+
+CP-[NÚMERO]: [Título del caso de prueba]
+Descripción: [Descripción detallada de qué se va a validar]
+Fecha de creación: [Fecha actual]
+Nº ID: [Número incremental]
+Módulo: [Nombre del módulo o sistema]
+Prioridad: [Alta/Media/Baja]
+Status: Por hacer
+Resultado esperado: [Describir el comportamiento esperado del sistema]
+Paso a paso de la prueba:
+1. [Primer paso]
+2. [Segundo paso]
+3. [Tercer paso]
+4. [Etc...]
+
+Ejemplo de formato correcto:
+CP-1: Verificar la adición del botón "Enviar" en el formulario
+Descripción: Validar que el botón "Enviar" se muestra correctamente en la interfaz de carga y edición de la planilla de mantenimiento, junto a los botones "Cancelar" y "Guardar".
+Fecha de creación: 8 de agosto de 2025
+Nº ID: 1
+Módulo: Mantenimiento de la sucursal (Formulario)
+Prioridad: Alta
+Status: Por hacer
+Resultado esperado: El botón "Enviar" es visible en la esquina superior derecha de la pantalla, al lado de "Guardar". Al hacerle clic, el sistema debe procesar el envío de la planilla.
+Paso a paso de la prueba:
+1. Ingresar al módulo de Mantenimiento.
+2. Hacer clic en "Agregar nuevo" o editar un mantenimiento existente con estado "Pendiente".
+3. Observar la esquina superior derecha de la pantalla del formulario.
+4. Verificar que los tres botones se muestran en el orden esperado: Cancelar, Guardar, Enviar.
+
+IMPORTANTE: SIEMPRE usar esta estructura exacta para todos los casos de prueba.
+        """
+    
+    def obtener_plantilla_manual_usuario(self):
+        """Retorna la plantilla estándar para manuales de usuario"""
+        return """
+IMPORTANTE: Todos los manuales de usuario deben seguir EXACTAMENTE esta estructura:
+
+ESTRUCTURA PRINCIPAL DEL MANUAL:
+====================================
+
+Documentación de Usuario 
+[NOMBRE DEL SISTEMA]
+
+[LOGO O IMAGEN SI CORRESPONDE]
+
+ÍNDICE
+1. Introducción
+   1.1. Objetivo del Proyecto
+   1.2. Descripción General del Sistema
+2. Guía de Usuario
+   2.1. Iniciar Sesión 
+   2.2. Menú Principal del Usuario
+3. Módulo [Nombre 1]
+   3.1. Descripción
+   3.2. [Funcionalidad 1]
+   3.3. [Funcionalidad 2]
+4. Módulo [Nombre 2]
+   4.1. Descripción
+   4.2. [Funcionalidad 1]
+   4.3. [Funcionalidad 2]
+[... continuar con todos los módulos]
+
+====================================
+FORMATO PARA CADA MÓDULO:
+====================================
+
+Módulo [Nombre del Módulo]:
+
+Descripción: 
+[Explicación clara y detallada de qué hace el módulo, cuál es su propósito principal y cómo beneficia al usuario]
+
+Funcionalidades principales:
+• [Funcionalidad 1]: [Descripción breve]
+• [Funcionalidad 2]: [Descripción breve]
+• [Funcionalidad 3]: [Descripción breve]
+
+[Nombre de la Funcionalidad]
+
+Para [realizar esta acción], siga estos pasos:
+
+1. [Paso detallado 1 - explicar dónde hacer clic, qué buscar]
+2. [Paso detallado 2 - describir la pantalla que aparece]
+3. [Paso detallado 3 - qué campos completar]
+4. [Paso detallado 4 - cómo guardar o confirmar]
+5. [Paso detallado 5 - qué verá el usuario como confirmación]
+
+Nota: [Información adicional útil, tips o advertencias]
+
+====================================
+EJEMPLO DE FORMATO CORRECTO:
+====================================
+
+Módulo Entidades
+
+Descripción: 
+El módulo de Entidades permite gestionar toda la información relacionada con las empresas y organizaciones que son clientes del sistema CRM-Bepsa. Aquí podrá crear nuevas entidades, editar información existente, consultar detalles completos y mantener actualizada la base de datos de clientes.
+
+Funcionalidades principales:
+• Crear nueva entidad: Registro de nuevas empresas en el sistema
+• Editar entidad existente: Modificación de datos de entidades ya registradas
+• Consultar información: Visualización detallada de datos de la entidad
+• Filtrar entidades: Búsqueda específica por diferentes criterios
+
+Crear una Nueva Entidad
+
+Para registrar una nueva entidad en el sistema, siga estos pasos:
+
+1. Desde el menú principal, haga clic en el módulo "Entidades" ubicado en el panel lateral izquierdo.
+2. En la pantalla de lista de entidades, localice y haga clic en el botón "Nueva Entidad" que se encuentra en la parte superior derecha.
+3. El sistema abrirá el formulario de creación de entidad. Complete los siguientes campos obligatorios:
+   • Nombre de la entidad
+   • RUC (Registro Único del Contribuyente)
+   • Dirección principal
+   • Teléfono de contacto
+   • Email principal
+4. Si desea, complete los campos opcionales como dirección secundaria, contactos adicionales, etc.
+5. Verifique que toda la información ingresada sea correcta.
+6. Haga clic en el botón "Guardar" ubicado en la parte inferior del formulario.
+7. El sistema validará la información y mostrará un mensaje de confirmación "Entidad creada exitosamente".
+8. La nueva entidad aparecerá automáticamente en la lista principal de entidades.
+
+Nota: Los campos marcados con asterisco (*) son obligatorios y deben completarse antes de poder guardar la entidad.
+
+IMPORTANTE: El manual debe ser descriptivo, educativo y guiar al usuario paso a paso. NO incluir "Resultado esperado" ni elementos de casos de prueba. Enfocarse en CÓMO usar el sistema, no en validar si funciona.
+        """
+    
     def responder_con_ia(self, mensaje):
         """Genera respuesta usando Google AI"""
         try:
             # Detectar si hay archivos adjuntos en el mensaje
             tiene_archivos = "--- ARCHIVOS ADJUNTOS ---" in mensaje
+            
+            # Detectar si el usuario solicita un rol específico
+            rol_solicitado = self.detectar_rol_solicitado(mensaje)
             
             if tiene_archivos:
                 # Extraer solo la pregunta del usuario (sin el contenido de archivos)
@@ -183,15 +324,58 @@ class ChatBot:
                     pregunta_usuario = "Analiza este archivo"
                 
                 # Para mensajes con archivos, usar un prompt especializado pero específico
-                prompt = f"""Eres {self.nombre}, un chatbot especializado en análisis de documentos y archivos.
+                # Detectar si se solicitan casos de prueba
+                solicita_casos_prueba = any(palabra in pregunta_usuario.lower() for palabra in 
+                                          ['casos de prueba', 'test cases', 'casos prueba', 'generar casos', 'crear casos'])
+                
+                # Detectar si se solicita manual de usuario
+                solicita_manual_usuario = any(palabra in pregunta_usuario.lower() for palabra in 
+                                            ['manual de usuario', 'manual usuario', 'documentacion usuario', 'guia usuario', 
+                                             'documentation user', 'user manual', 'guia de usuario', 'manual del usuario'])
+                
+                if rol_solicitado:
+                    # Agregar plantillas según lo solicitado
+                    plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
+                    plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
+                    
+                    prompt = f"""Eres {self.nombre}, actuando como {rol_solicitado}.
+
+{self.obtener_contexto_rol(rol_solicitado)}
+
+IMPORTANTE: Mantén tu rol de {rol_solicitado} y responde ÚNICAMENTE lo que el usuario solicita.
+
+{plantilla_casos}
+{plantilla_manual}
+
+El usuario solicita: "{pregunta_usuario}"
+
+Basándote en tu experiencia como {rol_solicitado} y en su solicitud específica:
+
+Historial reciente:
+{self.obtener_historial_reciente()}
+
+Contenido del archivo y solicitud:
+{mensaje}
+
+Responde como {rol_solicitado} específicamente a lo solicitado:"""
+                else:
+                    # Agregar plantillas según lo solicitado
+                    plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
+                    plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
+                    
+                    prompt = f"""Eres {self.nombre}, un chatbot especializado en análisis de documentos y archivos.
 
 IMPORTANTE: Responde ÚNICAMENTE lo que el usuario solicita. No agregues información extra no solicitada.
+
+{plantilla_casos}
+{plantilla_manual}
 
 El usuario solicita: "{pregunta_usuario}"
 
 Basándote en su solicitud específica, puedes:
 - Si pide un RESUMEN: Proporciona solo un resumen claro y conciso
-- Si pide CASOS DE PRUEBA: Genera casos de prueba detallados
+- Si pide CASOS DE PRUEBA: Genera casos de prueba detallados siguiendo la plantilla
+- Si pide MANUAL DE USUARIO: Genera documentación siguiendo la estructura específica
 - Si pide ANÁLISIS: Analiza el contenido según su solicitud
 - Si pide REVISIÓN DE CÓDIGO: Revisa y sugiere mejoras
 - Si no especifica: Pregunta qué tipo de análisis necesita
@@ -205,15 +389,52 @@ Contenido del archivo y solicitud:
 Responde específicamente a lo solicitado por el usuario:"""
             else:
                 # Prompt normal para conversación regular
-                prompt = f"""Eres {self.nombre}, un chatbot amigable y útil. 
-                Responde de manera natural, conversacional y en español.
+                # Detectar si se solicitan casos de prueba
+                solicita_casos_prueba = any(palabra in mensaje.lower() for palabra in 
+                                          ['casos de prueba', 'test cases', 'casos prueba', 'generar casos', 'crear casos'])
                 
-                Historial reciente de la conversación:
-                {self.obtener_historial_reciente()}
+                # Detectar si se solicita manual de usuario
+                solicita_manual_usuario = any(palabra in mensaje.lower() for palabra in 
+                                            ['manual de usuario', 'manual usuario', 'documentacion usuario', 'guia usuario', 
+                                             'documentation user', 'user manual', 'guia de usuario', 'manual del usuario'])
                 
-                Usuario: {mensaje}
-                
-                Responde de manera útil y amigable:"""
+                if rol_solicitado:
+                    # Agregar plantillas según lo solicitado
+                    plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
+                    plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
+                    
+                    prompt = f"""Eres {self.nombre}, actuando como {rol_solicitado}.
+
+{self.obtener_contexto_rol(rol_solicitado)}
+
+{plantilla_casos}
+{plantilla_manual}
+
+Mantén tu rol y personalidad como {rol_solicitado} durante toda la conversación.
+
+Historial reciente de la conversación:
+{self.obtener_historial_reciente()}
+
+Usuario: {mensaje}
+
+Responde como {rol_solicitado} de manera profesional y experta:"""
+                else:
+                    # Agregar plantillas según lo solicitado
+                    plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
+                    plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
+                    
+                    prompt = f"""Eres {self.nombre}, un chatbot amigable y útil. 
+                    Responde de manera natural, conversacional y en español.
+                    
+{plantilla_casos}
+{plantilla_manual}
+                    
+                    Historial reciente de la conversación:
+                    {self.obtener_historial_reciente()}
+                    
+                    Usuario: {mensaje}
+                    
+                    Responde de manera útil y amigable:"""
             
             response = self.modelo_ia.generate_content(prompt)
             return response.text
@@ -221,6 +442,115 @@ Responde específicamente a lo solicitado por el usuario:"""
         except Exception as e:
             print(f"Error con IA: {e}")
             return self.responder_localmente(mensaje)
+    
+    def detectar_rol_solicitado(self, mensaje):
+        """Detecta si el usuario solicita un rol específico"""
+        mensaje_lower = mensaje.lower()
+        
+        # Patrones para diferentes roles profesionales
+        roles = {
+            "experto en QA y casos de prueba": [
+                "actua como experto en qa", "actua como ingeniero qa", "actua como tester",
+                "actua como experto en testing", "actua como experto en casos de prueba",
+                "comportate como qa", "comportate como tester", "eres un experto qa",
+                "eres un ingeniero qa", "experto en quality assurance"
+            ],
+            "arquitecto de software": [
+                "actua como arquitecto", "actua como arquitecto de software",
+                "comportate como arquitecto", "eres un arquitecto de software"
+            ],
+            "analista de negocio": [
+                "actua como analista", "actua como analista de negocio",
+                "comportate como analista", "eres un analista de negocio"
+            ],
+            "desarrollador senior": [
+                "actua como desarrollador", "actua como programador senior",
+                "comportate como desarrollador", "eres un desarrollador senior"
+            ],
+            "consultor técnico": [
+                "actua como consultor", "actua como consultor tecnico",
+                "comportate como consultor", "eres un consultor técnico"
+            ]
+        }
+        
+        for rol, patrones in roles.items():
+            for patron in patrones:
+                if patron in mensaje_lower:
+                    return rol
+        
+        return None
+    
+    def obtener_contexto_rol(self, rol):
+        """Obtiene el contexto y características de un rol específico"""
+        contextos_roles = {
+            "experto en QA y casos de prueba": """
+Como experto en QA y casos de prueba con más de 10 años de experiencia, tienes:
+
+• Especialización en metodologías de testing (manual y automatizado)
+• Experiencia en diseño de casos de prueba exhaustivos
+• Conocimiento profundo de ISTQB, Agile Testing, y mejores prácticas
+• Habilidad para identificar escenarios de borde y casos críticos
+• Experiencia en documentación de defectos y seguimiento
+• Conocimiento en herramientas como Jira, TestRail, Selenium, etc.
+• Enfoque en calidad, cobertura de pruebas y análisis de riesgos
+
+Tu objetivo es asegurar la máxima calidad del software mediante pruebas rigurosas.
+            """,
+            
+            "arquitecto de software": """
+Como arquitecto de software senior con amplia experiencia, tienes:
+
+• Diseño de arquitecturas escalables y mantenibles
+• Conocimiento profundo de patrones de diseño y arquitectura
+• Experiencia en tecnologías cloud y microservicios
+• Habilidad para evaluar y recomendar tecnologías
+• Enfoque en performance, seguridad y escalabilidad
+• Experiencia en documentación técnica y diagramas de arquitectura
+
+Tu objetivo es diseñar soluciones técnicas robustas y eficientes.
+            """,
+            
+            "analista de negocio": """
+Como analista de negocio experimentado, tienes:
+
+• Habilidad para entender procesos de negocio complejos
+• Experiencia en levantamiento y análisis de requisitos
+• Conocimiento en modelado de procesos y documentación
+• Habilidad para traducir necesidades de negocio a requerimientos técnicos
+• Experiencia en stakeholder management
+• Enfoque en optimización de procesos y ROI
+
+Tu objetivo es maximizar el valor de negocio de las soluciones.
+            """,
+            
+            "desarrollador senior": """
+Como desarrollador senior con amplia experiencia, tienes:
+
+• Dominio de múltiples lenguajes y frameworks
+• Experiencia en código limpio y mejores prácticas
+• Conocimiento profundo de algoritmos y estructuras de datos
+• Habilidad para revisar código y mentorear juniors
+• Experiencia en debugging y optimización
+• Enfoque en mantenibilidad y performance
+
+Tu objetivo es escribir código de alta calidad y eficiente.
+            """,
+            
+            "consultor técnico": """
+Como consultor técnico experimentado, tienes:
+
+• Amplio conocimiento en múltiples tecnologías y metodologías
+• Habilidad para analizar problemas complejos y proponer soluciones
+• Experiencia en diferentes industrias y proyectos
+• Enfoque en mejores prácticas y estándares de la industria
+• Habilidad para comunicar conceptos técnicos a diferentes audiencias
+• Experiencia en auditorías técnicas y recomendaciones estratégicas
+
+Tu objetivo es proporcionar guidance experto y soluciones optimizadas.
+            """
+        }
+        
+        return contextos_roles.get(rol, "Actúa como un profesional experto en tu área.")
     
     def obtener_historial_reciente(self):
         """Obtiene las últimas 3 interacciones para contexto"""
@@ -456,7 +786,7 @@ Responde específicamente a lo solicitado por el usuario:"""
 def main():
     """Función principal para ejecutar el chatbot"""
     # Crear una instancia del chatbot
-    mi_chatbot = ChatBot("ChatBot Assistant")
+    mi_chatbot = ChatBot("Asistente Virtual")
     
     # Agregar algunas respuestas personalizadas (opcional)
     mi_chatbot.agregar_respuesta(

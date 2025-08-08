@@ -1,0 +1,13 @@
+{
+  "inicio": "2025-08-08T14:34:06.578522",
+  "conversaciones": [
+    {
+      "timestamp": "2025-08-08T14:34:15.389683",
+      "usuario": "Hola",
+      "bot": "¡Hola! ¿Cómo estás? Soy tu Asistente Virtual.",
+      "fue_ia": false
+    }
+  ],
+  "fin": "2025-08-08T14:35:07.932444",
+  "total_mensajes": 1
+}
