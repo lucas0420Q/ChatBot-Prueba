@@ -1,0 +1,31 @@
+{
+  "inicio": "2025-08-08T11:35:11.884900",
+  "conversaciones": [
+    {
+      "timestamp": "2025-08-08T11:35:22.672855",
+      "usuario": "hola",
+      "bot": "¡Hola! Soy ChatBot Assistant, ¿en qué puedo ayudarte?",
+      "fue_ia": false
+    },
+    {
+      "timestamp": "2025-08-08T11:35:27.570667",
+      "usuario": "como estas?",
+      "bot": "¡Estoy muy bien, gracias por preguntar! Listo para ayudarte con lo que necesites. ¿En qué te puedo ser útil hoy?\n",
+      "fue_ia": true
+    },
+    {
+      "timestamp": "2025-08-08T11:35:39.599311",
+      "usuario": "hola",
+      "bot": "¡Hola! ¿Cómo estás? Soy ChatBot Assistant",
+      "fue_ia": false
+    },
+    {
+      "timestamp": "2025-08-08T11:35:43.751172",
+      "usuario": "como estas?",
+      "bot": "¡Hola! Estoy bien, gracias por preguntar. ¿Y tú cómo estás? ¿Hay algo en lo que pueda ayudarte?\n",
+      "fue_ia": true
+    }
+  ],
+  "fin": "2025-08-08T11:36:31.208154",
+  "total_mensajes": 4
+}

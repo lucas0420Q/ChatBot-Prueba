@@ -1,0 +1,13 @@
+{
+  "inicio": "2025-08-08T11:44:26.773940",
+  "conversaciones": [
+    {
+      "timestamp": "2025-08-08T11:44:57.725579",
+      "usuario": "Como estas_",
+      "bot": "¡Hola! Estoy muy bien, gracias por preguntar. ¿Y tú, cómo estás hoy? ¿En qué puedo ayudarte?\n",
+      "fue_ia": true
+    }
+  ],
+  "fin": "2025-08-08T11:47:42.966610",
+  "total_mensajes": 1
+}

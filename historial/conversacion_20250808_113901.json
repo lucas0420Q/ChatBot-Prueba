@@ -1,0 +1,13 @@
+{
+  "inicio": "2025-08-08T11:38:50.626569",
+  "conversaciones": [
+    {
+      "timestamp": "2025-08-08T11:38:56.750824",
+      "usuario": "hola",
+      "bot": "¡Saludos! Soy ChatBot Assistant, ¿qué necesitas?",
+      "fue_ia": false
+    }
+  ],
+  "fin": "2025-08-08T11:39:01.143484",
+  "total_mensajes": 1
+}
