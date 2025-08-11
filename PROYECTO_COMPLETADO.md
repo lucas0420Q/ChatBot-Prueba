@@ -368,3 +368,125 @@ Output: Jenkins/GitLab CI configuration completa
 
 ---
 **🚀 SISTEMA ENTERPRISE-READY PARA DEPARTAMENTOS QA PROFESIONALES**
+
+---
+
+# 📚 ANEXOS DE CAMBIOS Y CORRECCIONES
+
+## ✅ CAMBIOS REALIZADOS - Panel QA Integrado
+
+### 📖 Manual de Usuario Integrado en Panel QA
+
+#### ✅ Cambios Implementados:
+
+1. **Agregada nueva herramienta en Panel QA:**
+    - 📖 **Manual de Usuario** en la sección "Test Cases & Docs"
+    - Ubicada junto a otras herramientas de documentación
+    - Comando optimizado para generar manuales profesionales
+
+2. **Funcionalidad completa:**
+    - Genera manuales siguiendo plantilla estándar mejorada
+    - Incluye estructura jerárquica profesional
+    - Lenguaje claro para usuarios finales
+    - Casos de uso prácticos integrados
+
+3. **Limpieza de archivos:**
+    - ✅ Eliminado: `generar_manual_usuario.py` (script separado)
+    - ✅ Eliminado: `Manual_Usuario_AsistenteVirtualQA_*.md` (archivos generados)
+    - ✅ Eliminado: `Manual_Usuario_AsistenteVirtualQA_*_CasosUso.md`
+
+4. **Actualizada documentación:**
+    - Tab renombrado a "📋 Test Cases & Docs"
+    - Ayuda actualizada con nueva funcionalidad
+    - Información sobre manual de usuario incluida
+
+#### 🎯 Cómo usar la nueva funcionalidad:
+
+1. **Abrir Panel QA Avanzado** desde el chatbot
+2. **Ir al tab "📋 Test Cases & Docs"**
+3. **Hacer clic en "📖 Manual de Usuario"**
+4. **El prompt se coloca automáticamente** en el campo de texto
+5. **Presionar Enter** para generar el manual
+
+#### 🔥 Beneficios de la integración:
+
+- **Todo en un lugar:** No necesidad de archivos separados
+- **Fácil acceso:** Directamente desde el Panel QA
+- **Consistente:** Misma interfaz que otras herramientas
+- **Actualizable:** Siempre usa la plantilla más reciente
+- **Personalizable:** Puedes modificar el prompt antes de enviar
+
+#### 📝 Plantilla de Manual incluye:
+
+- **Índice completo** con estructura jerárquica
+- **Introducción** (objetivo, alcance, audiencia)
+- **Información general** (descripción, requisitos, acceso)
+- **Guía de usuario** (primer acceso, navegación, interfaz)
+- **Funcionalidades detalladas** con pasos específicos
+- **Casos de uso comunes** (tareas diarias, periódicas, admin)
+- **Solución de problemas** (problemas comunes, códigos error)
+- **Anexos** (glosario, referencias, notas de versión)
+
+#### ✨ Estado actual:
+
+- ✅ Panel QA funcionando correctamente
+- ✅ Manual de usuario integrado
+- ✅ Archivos separados eliminados
+- ✅ Documentación actualizada
+- ✅ Chatbot ejecutándose sin errores
+
+**¡Listo para usar!** 🚀
+
+---
+
+## ✅ CORRECCIÓN - Mensajes de Archivos Adjuntos Eliminados
+
+### 🔇 Problema solucionado:
+
+Los mensajes del sistema sobre archivos adjuntos ya **NO aparecerán en el chat**:
+
+#### ❌ Mensajes eliminados:
+- `📎 X archivo(s) adjuntado(s): nombre.docx`
+- `🗑️ Archivo 'nombre.docx' eliminado`
+- `🗑️ Todos los archivos adjuntos han sido eliminados`
+
+### ✅ Cambios realizados:
+
+#### 1. **Funciones de archivos modificadas:**
+- `adjuntar_archivo()` - Comentados los mensajes del chat
+- `limpiar_archivos_adjuntos()` - Comentados los mensajes del chat  
+- `eliminar_archivo_individual()` - Comentados los mensajes del chat
+
+#### 2. **Método sistema actualizado:**
+- `mostrar_mensaje_sistema()` ahora tiene parámetro opcional `mostrar=True`
+- Solo se usará para mensajes realmente importantes
+
+### 🎯 **Comportamiento actual:**
+
+#### ✅ **Lo que SÍ pasa:**
+- Los archivos se adjuntan correctamente
+- La visualización de archivos adjuntos se actualiza
+- Los archivos se pueden eliminar individualmente
+- Los archivos se pueden limpiar todos
+- Los botones cambian según corresponde
+- Los tooltips muestran información
+
+#### ❌ **Lo que NO pasa:**
+- No aparecen mensajes en el chat al adjuntar
+- No aparecen mensajes en el chat al eliminar
+- No se incrementa el contador de mensajes innecesariamente
+- No se spamea el chat con notificaciones
+
+### 🔄 **Experiencia de usuario mejorada:**
+
+1. **Adjuntar archivo:** Solo se ve en la zona de archivos adjuntos
+2. **Eliminar archivo:** Solo desaparece de la visualización
+3. **Chat limpio:** Solo mensajes de conversación importantes
+4. **Interfaz clara:** Separación entre acciones y conversación
+
+### 🚀 **Listo para usar:**
+
+El chatbot ahora tiene una experiencia más limpia y profesional, sin spam de mensajes del sistema innecesarios.
+
+**Fecha de corrección:** 11 de agosto de 2025
+**Estado:** ✅ Implementado y funcionando

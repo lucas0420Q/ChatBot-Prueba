@@ -926,9 +926,22 @@ class AsistenteVirtualModernUI(QMainWindow):
         input_frame = QFrame()
         input_frame.setObjectName("inputFrame")
         
-        input_layout = QHBoxLayout(input_frame)
+        input_layout = QVBoxLayout(input_frame)
         input_layout.setContentsMargins(25, 20, 25, 20)
         input_layout.setSpacing(15)
+        
+        # Área para mostrar archivos adjuntos
+        self.archivos_widget = QWidget()
+        self.archivos_widget.setObjectName("archivosWidget")
+        self.archivos_layout = QHBoxLayout(self.archivos_widget)
+        self.archivos_layout.setContentsMargins(0, 0, 0, 0)
+        self.archivos_layout.setSpacing(10)
+        self.archivos_widget.hide()  # Oculto por defecto
+        input_layout.addWidget(self.archivos_widget)
+        
+        # Layout horizontal para texto y botones
+        text_buttons_layout = QHBoxLayout()
+        text_buttons_layout.setSpacing(15)
         
         # Campo de texto estable con altura fija
         self.entrada_texto = QTextEdit()
@@ -948,11 +961,18 @@ class AsistenteVirtualModernUI(QMainWindow):
         buttons_layout = QVBoxLayout()
         buttons_layout.setSpacing(10)
         
-        # Botón adjuntar
+        # Botón adjuntar con indicador de cantidad
         self.attach_btn = QPushButton("📎 Adjuntar")
         self.attach_btn.setObjectName("attachButton")
         self.attach_btn.setFixedHeight(35)
         self.attach_btn.clicked.connect(self.adjuntar_archivo)
+        
+        # Botón limpiar adjuntos
+        self.clear_attachments_btn = QPushButton("🗑️ Limpiar")
+        self.clear_attachments_btn.setObjectName("clearButton")
+        self.clear_attachments_btn.setFixedHeight(35)
+        self.clear_attachments_btn.clicked.connect(self.limpiar_archivos_adjuntos)
+        self.clear_attachments_btn.hide()  # Oculto por defecto
         
         # Botón enviar
         self.send_btn = QPushButton("➤ Enviar")
@@ -961,10 +981,13 @@ class AsistenteVirtualModernUI(QMainWindow):
         self.send_btn.clicked.connect(self.enviar_mensaje)
         
         buttons_layout.addWidget(self.attach_btn)
+        buttons_layout.addWidget(self.clear_attachments_btn)
         buttons_layout.addWidget(self.send_btn)
         
-        input_layout.addWidget(self.entrada_texto)
-        input_layout.addLayout(buttons_layout)
+        text_buttons_layout.addWidget(self.entrada_texto)
+        text_buttons_layout.addLayout(buttons_layout)
+        
+        input_layout.addLayout(text_buttons_layout)
         
         return input_frame
     
@@ -1193,6 +1216,7 @@ class AsistenteVirtualModernUI(QMainWindow):
         # Limpiar archivos adjuntos después de enviar
         if self.archivos_adjuntos:
             self.archivos_adjuntos.clear()
+            self.actualizar_visualizacion_archivos()
     
     def procesar_respuesta(self, respuesta):
         """Procesar respuesta del chatbot"""
@@ -1254,9 +1278,118 @@ class AsistenteVirtualModernUI(QMainWindow):
         
         if archivos:
             self.archivos_adjuntos.extend(archivos)
-            nombres = [os.path.basename(archivo) for archivo in archivos]
-            mensaje = f"📎 {len(archivos)} archivo(s) adjuntado(s): {', '.join(nombres)}"
-            self.mostrar_mensaje_bot(mensaje)
+            self.actualizar_visualizacion_archivos()
+            
+            # NO mostrar mensaje en el chat - solo actualizar visualización
+            # nombres = [os.path.basename(archivo) for archivo in archivos]
+            # mensaje = f"📎 {len(archivos)} archivo(s) adjuntado(s): {', '.join(nombres)}"
+            # self.mostrar_mensaje_sistema(mensaje)
+    
+    def limpiar_archivos_adjuntos(self):
+        """Limpiar todos los archivos adjuntos"""
+        if self.archivos_adjuntos:
+            self.archivos_adjuntos.clear()
+            self.actualizar_visualizacion_archivos()
+            # NO mostrar mensaje en el chat
+            # self.mostrar_mensaje_sistema("🗑️ Todos los archivos adjuntos han sido eliminados")
+    
+    def eliminar_archivo_individual(self, indice):
+        """Eliminar un archivo individual de los adjuntos"""
+        if 0 <= indice < len(self.archivos_adjuntos):
+            archivo_eliminado = os.path.basename(self.archivos_adjuntos[indice])
+            del self.archivos_adjuntos[indice]
+            self.actualizar_visualizacion_archivos()
+            # NO mostrar mensaje en el chat
+            # self.mostrar_mensaje_sistema(f"🗑️ Archivo '{archivo_eliminado}' eliminado")
+    
+    def actualizar_visualizacion_archivos(self):
+        """Actualizar la visualización de archivos adjuntos"""
+        # Limpiar layout existente
+        for i in reversed(range(self.archivos_layout.count())):
+            child = self.archivos_layout.itemAt(i).widget()
+            if child:
+                child.deleteLater()
+        
+        if self.archivos_adjuntos:
+            # Mostrar widget de archivos
+            self.archivos_widget.show()
+            self.clear_attachments_btn.show()
+            
+            # Agregar cada archivo con botón de eliminar
+            for indice, archivo in enumerate(self.archivos_adjuntos):
+                archivo_frame = QFrame()
+                archivo_frame.setObjectName("archivoFrame")
+                
+                archivo_layout = QHBoxLayout(archivo_frame)
+                archivo_layout.setContentsMargins(10, 5, 10, 5)
+                archivo_layout.setSpacing(8)
+                
+                # Icono según tipo de archivo
+                extension = os.path.splitext(archivo)[1].lower()
+                if extension in ['.pdf']:
+                    icono = "📄"
+                elif extension in ['.docx', '.doc']:
+                    icono = "📝"
+                elif extension in ['.txt']:
+                    icono = "📃"
+                elif extension in ['.png', '.jpg', '.jpeg']:
+                    icono = "🖼️"
+                else:
+                    icono = "📎"
+                
+                # Label del archivo
+                nombre_archivo = os.path.basename(archivo)
+                if len(nombre_archivo) > 30:
+                    nombre_archivo = nombre_archivo[:27] + "..."
+                
+                archivo_label = QLabel(f"{icono} {nombre_archivo}")
+                archivo_label.setObjectName("archivoLabel")
+                archivo_label.setToolTip(archivo)  # Tooltip con ruta completa
+                
+                # Botón para eliminar archivo individual
+                eliminar_btn = QPushButton("❌")
+                eliminar_btn.setObjectName("eliminarArchivoBtn")
+                eliminar_btn.setFixedSize(25, 25)
+                eliminar_btn.setToolTip(f"Eliminar {nombre_archivo}")
+                eliminar_btn.clicked.connect(lambda checked, idx=indice: self.eliminar_archivo_individual(idx))
+                
+                archivo_layout.addWidget(archivo_label)
+                archivo_layout.addWidget(eliminar_btn)
+                
+                self.archivos_layout.addWidget(archivo_frame)
+            
+            # Actualizar texto del botón adjuntar
+            self.attach_btn.setText(f"📎 Adjuntar ({len(self.archivos_adjuntos)})")
+        else:
+            # Ocultar widget de archivos
+            self.archivos_widget.hide()
+            self.clear_attachments_btn.hide()
+            self.attach_btn.setText("📎 Adjuntar")
+    
+    def mostrar_mensaje_sistema(self, mensaje, mostrar=True):
+        """Mostrar mensaje del sistema (para notificaciones importantes únicamente)"""
+        if not mostrar:
+            return
+            
+        timestamp = datetime.now().strftime("%H:%M")
+        
+        html_mensaje = f"""
+        <div style="width: 100%; margin: 8px 0; font-family: 'Segoe UI', Arial, sans-serif; clear: both;">
+            <div style="text-align: center;">
+                <div style="display: inline-block; background: #374151; color: #D1D5DB; 
+                            padding: 8px 15px; border-radius: 15px; font-size: 14px;
+                            border: 1px solid #6B7280;">
+                    <span style="color: #9CA3AF;">[{timestamp}]</span> {mensaje}
+                </div>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+        """
+        
+        self.area_chat.append(html_mensaje)
+        self.scroll_to_bottom()
+        self.contador_mensajes += 1
+        self.actualizar_status()
     
     def abrir_historial(self):
         """Abrir ventana de historial"""
@@ -1305,6 +1438,7 @@ class AsistenteVirtualModernUI(QMainWindow):
         
         # Limpiar archivos adjuntos
         self.archivos_adjuntos.clear()
+        self.actualizar_visualizacion_archivos()
     
     def guardar_conversacion(self):
         """Guardar la conversación actual"""
@@ -1470,6 +1604,64 @@ class AsistenteVirtualModernUI(QMainWindow):
         #attachButton:hover {
             background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
                                       stop: 0 #6366F1, stop: 1 #7C3AED);
+        }
+        
+        #clearButton {
+            background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                                      stop: 0 #EF4444, stop: 1 #DC2626);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 8px 15px;
+            min-width: 100px;
+        }
+        
+        #clearButton:hover {
+            background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                                      stop: 0 #F87171, stop: 1 #EF4444);
+        }
+        
+        #archivosWidget {
+            background: #1B243A;
+            border: 2px solid #4C5BFF;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        #archivoFrame {
+            background: #2D3748;
+            border: 1px solid #4C5BFF;
+            border-radius: 8px;
+            margin: 2px;
+            padding: 5px;
+        }
+        
+        #archivoFrame:hover {
+            background: #374151;
+            border: 1px solid #6366F1;
+        }
+        
+        #archivoLabel {
+            color: #E2E8F0;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 2px 5px;
+        }
+        
+        #eliminarArchivoBtn {
+            background: #EF4444;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        #eliminarArchivoBtn:hover {
+            background: #F87171;
         }
         
         #sendButton {

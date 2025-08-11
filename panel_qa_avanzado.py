@@ -54,7 +54,7 @@ class PanelQAAvanzado(QDialog):
         # Tab 2: Test Cases & Documentation
         tab_docs = QWidget()
         self.configurar_tab_documentacion(tab_docs)
-        self.tabs.addTab(tab_docs, "📋 Test Cases")
+        self.tabs.addTab(tab_docs, "📋 Test Cases & Docs")
         
         # Tab 3: Automation Scripts
         tab_auto = QWidget()
@@ -163,6 +163,7 @@ class PanelQAAvanzado(QDialog):
         """Tab para Test Cases & Documentation"""
         herramientas = [
             ("📋 Plan de Pruebas Completo", "Crea plan de pruebas siguiendo IEEE 829", self.generar_plan_pruebas),
+            ("📖 Manual de Usuario", "Genera manual de usuario completo y profesional", self.generar_manual_usuario),
             ("✅ Casos de Prueba BDD", "Genera casos en formato Gherkin/Cucumber", self.generar_casos_bdd),
             ("🎯 Matriz de Trazabilidad", "Crea RTM (Requirements Traceability Matrix)", self.generar_rtm),
             ("📑 Checklist Pre-Deploy", "Lista de verificación antes de producción", self.generar_checklist),
@@ -295,6 +296,9 @@ Resumen de lo más importante.
     
     def generar_plan_pruebas(self):
         self.enviar_comando("Crea un plan de pruebas completo siguiendo el estándar IEEE 829, incluyendo scope, approach, resources, schedule, risks y criterios de entrada/salida.")
+    
+    def generar_manual_usuario(self):
+        self.enviar_comando("Actúa como experto en documentación técnica y genera un MANUAL DE USUARIO COMPLETO siguiendo la plantilla estándar. Incluye: 1) Estructura completa con índice, introducción, información general, guía de usuario, funcionalidades detalladas, casos de uso comunes, solución de problemas y anexos. 2) Para cada funcionalidad, describe el propósito, cuándo usar, pasos detallados paso a paso, consejos útiles y solución de problemas. 3) Lenguaje claro y accesible para usuarios finales. 4) Ejemplos prácticos y casos de uso reales. 5) Formato profesional con estructura jerárquica. Enfócate en CÓMO usar el sistema, no en validarlo.")
     
     def generar_casos_bdd(self):
         self.enviar_comando("Genera casos de prueba en formato BDD usando Gherkin (Given-When-Then), incluyendo escenarios, ejemplos y integración con Cucumber/SpecFlow.")
@@ -432,7 +436,7 @@ Resumen de lo más importante.
             <h3 style='color: #DC2626;'>📋 TABS DISPONIBLES:</h3>
             <ul style='color: #1F2937; line-height: 1.8; font-size: 15px;'>
                 <li><strong>🔌 API Testing:</strong> Herramientas para testing de APIs</li>
-                <li><strong>📋 Test Cases:</strong> Documentación y casos de prueba</li>
+                <li><strong>📋 Test Cases & Docs:</strong> Documentación, casos de prueba y manuales</li>
                 <li><strong>🤖 Automation:</strong> Scripts y frameworks de automation</li>
                 <li><strong>🔒 Security & Perf:</strong> Testing de seguridad y performance</li>
                 <li><strong>📱 Mobile & A11y:</strong> Testing móvil y accesibilidad</li>
@@ -447,6 +451,14 @@ Resumen de lo más importante.
                 <li>El comando se colocará en el campo de texto del chat</li>
                 <li>Presiona Enter para obtener una respuesta profesional y detallada</li>
             </ol>
+            
+            <h3 style='color: #DC2626;'>⭐ NUEVAS FUNCIONALIDADES:</h3>
+            <ul style='color: #1F2937; line-height: 1.8; font-size: 15px;'>
+                <li><strong>📖 Manual de Usuario:</strong> Genera manuales completos y profesionales</li>
+                <li>Incluye estructura estándar con índice, funcionalidades y casos de uso</li>
+                <li>Formato profesional adaptable a cualquier sistema o aplicación</li>
+                <li>Lenguaje claro y accesible para usuarios finales</li>
+            </ul>
             
             <h3 style='color: #DC2626;'>⭐ TIPS:</h3>
             <ul style='color: #1F2937; line-height: 1.8; font-size: 15px;'>

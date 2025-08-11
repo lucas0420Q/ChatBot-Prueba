@@ -771,90 +771,181 @@ IMPORTANTE: Todos los manuales de usuario deben seguir EXACTAMENTE esta estructu
 ESTRUCTURA PRINCIPAL DEL MANUAL:
 ====================================
 
-Documentación de Usuario 
-[NOMBRE DEL SISTEMA]
+# Manual de Usuario 
+## [NOMBRE DEL SISTEMA]
 
 [LOGO O IMAGEN SI CORRESPONDE]
 
-ÍNDICE
-1. Introducción
-   1.1. Objetivo del Proyecto
-   1.2. Descripción General del Sistema
-2. Guía de Usuario
-   2.1. Iniciar Sesión 
-   2.2. Menú Principal del Usuario
-3. Módulo [Nombre 1]
-   3.1. Descripción
-   3.2. [Funcionalidad 1]
-   3.3. [Funcionalidad 2]
-4. Módulo [Nombre 2]
-   4.1. Descripción
-   4.2. [Funcionalidad 1]
-   4.3. [Funcionalidad 2]
-[... continuar con todos los módulos]
+## ÍNDICE
+1. **Introducción**
+   1.1. Objetivo del Manual
+   1.2. Alcance del Sistema
+   1.3. Audiencia Objetivo
+2. **Información General**
+   2.1. Descripción del Sistema
+   2.2. Requisitos del Sistema
+   2.3. Acceso al Sistema
+3. **Guía de Usuario**
+   3.1. Primer Acceso
+   3.2. Navegación General
+   3.3. Interfaz Principal
+4. **Funcionalidades del Sistema**
+   4.1. [Módulo 1]
+   4.2. [Módulo 2]
+   4.3. [Módulo 3]
+   [... continuar con todos los módulos]
+5. **Casos de Uso Comunes**
+   5.1. Tareas Diarias
+   5.2. Tareas Periódicas
+   5.3. Tareas Administrativas
+6. **Solución de Problemas**
+   6.1. Problemas Comunes
+   6.2. Códigos de Error
+   6.3. Contacto de Soporte
+7. **Anexos**
+   7.1. Glosario
+   7.2. Referencias
+   7.3. Notas de Versión
 
 ====================================
 FORMATO PARA CADA MÓDULO:
 ====================================
 
-Módulo [Nombre del Módulo]:
+## [Número]. [Nombre del Módulo]
 
-Descripción: 
+### Descripción General
 [Explicación clara y detallada de qué hace el módulo, cuál es su propósito principal y cómo beneficia al usuario]
 
-Funcionalidades principales:
-• [Funcionalidad 1]: [Descripción breve]
-• [Funcionalidad 2]: [Descripción breve]
-• [Funcionalidad 3]: [Descripción breve]
+### Objetivos del Módulo
+- [Objetivo 1]: [Descripción del beneficio]
+- [Objetivo 2]: [Descripción del beneficio]
+- [Objetivo 3]: [Descripción del beneficio]
 
-[Nombre de la Funcionalidad]
+### Funcionalidades Principales
+• **[Funcionalidad 1]**: [Descripción breve y clara]
+• **[Funcionalidad 2]**: [Descripción breve y clara]
+• **[Funcionalidad 3]**: [Descripción breve y clara]
 
-Para [realizar esta acción], siga estos pasos:
+### Cómo Acceder al Módulo
+1. [Paso detallado 1 - desde dónde empezar]
+2. [Paso detallado 2 - qué buscar o dónde hacer clic]
+3. [Paso detallado 3 - confirmación de acceso]
 
-1. [Paso detallado 1 - explicar dónde hacer clic, qué buscar]
-2. [Paso detallado 2 - describir la pantalla que aparece]
-3. [Paso detallado 3 - qué campos completar]
-4. [Paso detallado 4 - cómo guardar o confirmar]
-5. [Paso detallado 5 - qué verá el usuario como confirmación]
+---
 
-Nota: [Información adicional útil, tips o advertencias]
+### [Nombre de la Funcionalidad Específica]
+
+**Propósito:** [Para qué sirve esta funcionalidad específica]
+
+**Cuándo usar:** [En qué situaciones es útil esta función]
+
+**Pasos detallados:**
+
+1. **[Acción inicial]**: [Explicación detallada del primer paso, incluyendo dónde hacer clic, qué buscar en pantalla]
+   
+2. **[Navegación]**: [Descripción de la pantalla que aparece, elementos importantes a considerar]
+   
+3. **[Completar información]**: [Qué campos completar, cuáles son obligatorios, formato esperado]
+   
+4. **[Validación]**: [Cómo verificar que la información esté correcta antes de continuar]
+   
+5. **[Confirmación]**: [Cómo guardar o confirmar la acción, qué botón usar]
+   
+6. **[Verificación final]**: [Qué verá el usuario como confirmación de que la acción fue exitosa]
+
+**Consejos útiles:**
+- [Tip 1]: [Consejo práctico para mejorar la experiencia]
+- [Tip 2]: [Advertencia importante o buena práctica]
+- [Tip 3]: [Atajo o funcionalidad adicional útil]
+
+**Solución de problemas:**
+- **Si [problema común]**: [Solución paso a paso]
+- **Si [otro problema]**: [Otra solución]
+
+---
 
 ====================================
 EJEMPLO DE FORMATO CORRECTO:
 ====================================
 
-Módulo Entidades
+## 3. Módulo de Gestión de Entidades
 
-Descripción: 
-El módulo de Entidades permite gestionar toda la información relacionada con las empresas y organizaciones que son clientes del sistema CRM-Bepsa. Aquí podrá crear nuevas entidades, editar información existente, consultar detalles completos y mantener actualizada la base de datos de clientes.
+### Descripción General
+El módulo de Gestión de Entidades permite administrar toda la información relacionada con las empresas, organizaciones y personas que son clientes o proveedores del sistema. Este módulo centraliza los datos de contacto, información legal, direcciones y permite mantener un registro histórico de todas las interacciones. Es fundamental para la gestión de relaciones comerciales y el seguimiento de clientes.
 
-Funcionalidades principales:
-• Crear nueva entidad: Registro de nuevas empresas en el sistema
-• Editar entidad existente: Modificación de datos de entidades ya registradas
-• Consultar información: Visualización detallada de datos de la entidad
-• Filtrar entidades: Búsqueda específica por diferentes criterios
+### Objetivos del Módulo
+- **Centralización de datos**: Mantener toda la información de entidades en un solo lugar
+- **Trazabilidad**: Registro histórico de cambios y actualizaciones
+- **Eficiencia**: Acceso rápido a información relevante de clientes y proveedores
+- **Calidad de datos**: Validaciones que aseguran información completa y correcta
 
-Crear una Nueva Entidad
+### Funcionalidades Principales
+• **Crear nueva entidad**: Registro de nuevas empresas o personas en el sistema
+• **Editar entidad existente**: Modificación de datos de entidades ya registradas
+• **Consultar información**: Visualización detallada de todos los datos de la entidad
+• **Buscar y filtrar**: Localización rápida de entidades usando diferentes criterios
+• **Gestionar contactos**: Administración de múltiples contactos por entidad
+• **Historial de cambios**: Registro de todas las modificaciones realizadas
 
-Para registrar una nueva entidad en el sistema, siga estos pasos:
+### Cómo Acceder al Módulo
+1. Desde la pantalla principal del sistema, localice el menú lateral izquierdo
+2. Busque y haga clic en "Gestión de Entidades" o el ícono 🏢
+3. El sistema cargará la pantalla principal del módulo con la lista de entidades
 
-1. Desde el menú principal, haga clic en el módulo "Entidades" ubicado en el panel lateral izquierdo.
-2. En la pantalla de lista de entidades, localice y haga clic en el botón "Nueva Entidad" que se encuentra en la parte superior derecha.
-3. El sistema abrirá el formulario de creación de entidad. Complete los siguientes campos obligatorios:
-   • Nombre de la entidad
-   • RUC (Registro Único del Contribuyente)
-   • Dirección principal
-   • Teléfono de contacto
-   • Email principal
-4. Si desea, complete los campos opcionales como dirección secundaria, contactos adicionales, etc.
-5. Verifique que toda la información ingresada sea correcta.
-6. Haga clic en el botón "Guardar" ubicado en la parte inferior del formulario.
-7. El sistema validará la información y mostrará un mensaje de confirmación "Entidad creada exitosamente".
-8. La nueva entidad aparecerá automáticamente en la lista principal de entidades.
+---
 
-Nota: Los campos marcados con asterisco (*) son obligatorios y deben completarse antes de poder guardar la entidad.
+### Crear una Nueva Entidad
 
-IMPORTANTE: El manual debe ser descriptivo, educativo y guiar al usuario paso a paso. NO incluir "Resultado esperado" ni elementos de casos de prueba. Enfocarse en CÓMO usar el sistema, no en validar si funciona.
+**Propósito:** Registrar una nueva empresa, organización o persona en el sistema para futuras transacciones comerciales.
+
+**Cuándo usar:** Cuando necesite registrar un nuevo cliente, proveedor o cualquier entidad con la que la empresa vaya a tener relaciones comerciales.
+
+**Pasos detallados:**
+
+1. **Acceder al formulario**: Desde la pantalla principal del módulo de entidades, localice el botón "Nueva Entidad" en la parte superior derecha y haga clic en él.
+
+2. **Seleccionar tipo de entidad**: En la pantalla que aparece, elija si va a registrar una "Empresa" o "Persona Natural" marcando la opción correspondiente.
+
+3. **Completar información básica**: Llene los siguientes campos obligatorios (marcados con asterisco rojo):
+   - **Nombre/Razón Social**: Nombre completo de la empresa o persona
+   - **Número de identificación**: RUC para empresas, Cédula para personas
+   - **Tipo de entidad**: Cliente, Proveedor, o Ambos
+
+4. **Agregar información de contacto**: Complete los datos de contacto:
+   - **Dirección principal**: Dirección física completa
+   - **Teléfono principal**: Número de contacto preferido
+   - **Email principal**: Correo electrónico de contacto
+
+5. **Información adicional (opcional)**: Si lo desea, puede completar:
+   - Dirección secundaria
+   - Teléfonos adicionales
+   - Emails alternativos
+   - Página web
+   - Observaciones especiales
+
+6. **Validar y guardar**: Revise toda la información ingresada, asegúrese de que no haya errores y haga clic en "Guardar Entidad".
+
+7. **Confirmación**: El sistema mostrará un mensaje verde "Entidad creada exitosamente" y la nueva entidad aparecerá automáticamente en la lista principal.
+
+**Consejos útiles:**
+- **Verificación de duplicados**: El sistema verificará automáticamente si ya existe una entidad con el mismo número de identificación
+- **Campos obligatorios**: Los campos marcados con asterisco (*) son obligatorios y deben completarse
+- **Formato de identificación**: Para RUC usar formato 20-XXXXXXXX-X, para cédula 0-XXXX-XXXX
+
+**Solución de problemas:**
+- **Si aparece "Número de identificación ya existe"**: Verifique si la entidad ya está registrada usando la función de búsqueda
+- **Si no se puede guardar**: Revise que todos los campos obligatorios estén completos y en el formato correcto
+- **Si hay error de formato**: Verifique que el email tenga formato válido (usuario@dominio.com) y el teléfono solo contenga números
+
+---
+
+IMPORTANTE PARA EL MANUAL: 
+- El manual debe ser **descriptivo y educativo**, guiando al usuario paso a paso
+- **NO incluir** "Resultado esperado" ni elementos típicos de casos de prueba
+- Enfocarse en **CÓMO usar el sistema**, no en validar si funciona
+- Usar lenguaje claro y accesible para usuarios finales
+- Incluir **consejos prácticos** y **solución de problemas comunes**
+- Proporcionar **contexto** sobre cuándo y por qué usar cada funcionalidad
         """
     
     def responder_con_ia(self, mensaje):
