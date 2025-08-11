@@ -1123,8 +1123,7 @@ class AsistenteVirtualModernUI(QMainWindow):
         """Mostrar mensaje del usuario con diseño moderno alineado a la derecha y en negrita"""
         timestamp = datetime.now().strftime("%H:%M")
         
-        # Agregar conversación al chatbot
-        self.chatbot.guardar_conversacion(mensaje, "")
+        # No guardar aquí - se guarda completo en procesar_mensaje del chatbot
         
         # Usar método separado para generar HTML
         html_mensaje = self.generar_html_mensaje_usuario(mensaje, timestamp)
