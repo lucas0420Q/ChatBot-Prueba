@@ -214,6 +214,555 @@ Paso a paso de la prueba:
 IMPORTANTE: SIEMPRE usar esta estructura exacta para todos los casos de prueba.
         """
     
+    def obtener_plantillas_qa_avanzadas(self):
+        """Retorna plantillas especializadas para QA profesional"""
+        return {
+            'casos_api': """
+PLANTILLA PARA CASOS DE PRUEBA DE API:
+
+API-[NÚMERO]: [Nombre del endpoint] - [Método HTTP]
+Endpoint: [URL del endpoint]
+Método: [GET/POST/PUT/DELETE]
+Descripción: [Qué valida este caso]
+Precondiciones: [Estado requerido antes de la prueba]
+
+Headers requeridos:
+- Content-Type: application/json
+- Authorization: Bearer [token]
+
+Payload de entrada:
+```json
+{
+  "campo1": "valor",
+  "campo2": 123
+}
+```
+
+Validaciones:
+- Código de respuesta esperado: [200/201/400/etc]
+- Estructura de respuesta
+- Validación de campos obligatorios
+- Validación de tipos de datos
+- Manejo de errores
+
+Casos de prueba:
+1. Caso positivo con datos válidos
+2. Caso negativo con datos inválidos
+3. Caso de borde con valores límite
+4. Caso de autenticación fallida
+5. Caso de autorización insuficiente
+            """,
+            
+            'casos_seguridad': """
+PLANTILLA PARA CASOS DE TESTING DE SEGURIDAD:
+
+SEC-[NÚMERO]: [Tipo de vulnerabilidad] - [Componente]
+Categoría: [OWASP Top 10 / ISO 27001]
+Severidad: [Crítica/Alta/Media/Baja]
+Tipo de ataque: [Injection/XSS/CSRF/etc]
+
+Escenario de ataque:
+[Descripción del vector de ataque]
+
+Pasos para reproducir:
+1. [Configuración inicial]
+2. [Preparación del ataque]
+3. [Ejecución del ataque]
+4. [Verificación del resultado]
+
+Resultado esperado:
+- El sistema debe rechazar el ataque
+- Debe registrar el intento en logs
+- No debe exponer información sensible
+
+Criterios de aceptación:
+- No hay exposición de datos
+- Autenticación/autorización funciona
+- Logs de seguridad generados
+            """,
+            
+            'casos_performance': """
+PLANTILLA PARA CASOS DE TESTING DE PERFORMANCE:
+
+PERF-[NÚMERO]: [Tipo de prueba] - [Componente]
+Objetivo: [Tiempo de respuesta/Throughput/Carga]
+Herramienta: [JMeter/LoadRunner/Artillery]
+
+Configuración de carga:
+- Usuarios concurrentes: [número]
+- Duración: [tiempo]
+- Ramp-up: [tiempo de incremento]
+
+Métricas a medir:
+- Tiempo de respuesta promedio
+- Percentil 95
+- Throughput (requests/segundo)
+- CPU y memoria del sistema
+- Errores por segundo
+
+Criterios de aceptación:
+- Tiempo respuesta < [X] segundos
+- Throughput > [X] req/seg
+- Tasa de error < [X]%
+- CPU < 80% y Memoria < 85%
+            """,
+            
+            'checklist_deploy': """
+CHECKLIST PRE-DEPLOY - QA SIGN-OFF:
+
+🔍 TESTING FUNCIONAL
+☐ Casos de prueba críticos ejecutados y aprobados
+☐ Regression testing completado
+☐ Integración con APIs externas validada
+☐ Flujos de usuario end-to-end verificados
+☐ Validación de datos y formularios
+
+🔒 TESTING DE SEGURIDAD  
+☐ Autenticación y autorización validadas
+☐ Validación de inputs contra inyecciones
+☐ Manejo seguro de sesiones
+☐ Encriptación de datos sensibles
+☐ Validación de permisos por rol
+
+⚡ TESTING DE PERFORMANCE
+☐ Tiempos de respuesta dentro de SLA
+☐ Testing de carga bajo condiciones normales
+☐ Testing de stress en picos de uso
+☐ Optimización de queries de base de datos
+☐ Caching funcionando correctamente
+
+🖥️ TESTING DE UI/UX
+☐ Responsive design en diferentes dispositivos
+☐ Cross-browser compatibility
+☐ Accesibilidad (WCAG guidelines)
+☐ Usabilidad validada con usuarios
+☐ Loading states y error messages
+
+📊 TESTING DE DATOS
+☐ Migración de datos validada
+☐ Backup y recovery procedures
+☐ Integridad referencial verificada
+☐ Validación de reportes y analytics
+
+🔧 CONFIGURACIÓN Y AMBIENTE
+☐ Variables de ambiente configuradas
+☐ Logs y monitoreo funcionando
+☐ SSL/TLS certificados válidos
+☐ CDN y assets optimizados
+☐ Health checks implementados
+
+📋 DOCUMENTACIÓN
+☐ Release notes actualizadas
+☐ Manual de usuario actualizado
+☐ Documentación técnica completa
+☐ Runbook de troubleshooting
+☐ Plan de rollback definido
+
+✅ APROBACIONES
+☐ Product Owner approval
+☐ Technical Lead approval  
+☐ QA Manager sign-off
+☐ Security team approval
+☐ DevOps team ready
+
+🚀 READY FOR DEPLOYMENT
+            """
+        }
+    
+    def generar_contexto_qa_especializado(self, tipo_contexto="general"):
+        """Genera contextos especializados para diferentes tipos de QA"""
+        contextos = {
+            'qa_manual': """
+Como QA Manual Senior especializado en:
+• Diseño de casos de prueba exhaustivos y detallados
+• Testing exploratorio y descubrimiento de defectos críticos  
+• Validación de UX/UI y flujos de usuario end-to-end
+• Documentación detallada de defectos con pasos para reproducir
+• Testing de regresión y validación de fixes
+• Coordinación con desarrollo para resolution de issues
+• Testing de aceptación y validación de criterios de negocio
+
+Enfoque: Calidad desde la perspectiva del usuario final
+            """,
+            
+            'qa_automatizado': """
+Como QA Automation Engineer especializado en:
+• Desarrollo de frameworks de automatización escalables
+• Scripts de testing con Selenium, Playwright, Cypress
+• API testing automatizado con Postman, RestAssured
+• Integración con pipelines CI/CD (Jenkins, GitLab, Azure)
+• Testing de performance automatizado con JMeter, k6
+• Reporting automático y dashboards de métricas
+• Mantenimiento y optimización de test suites
+
+Enfoque: Eficiencia y cobertura automatizada
+            """,
+            
+            'qa_api': """
+Como API Testing Specialist especializado en:
+• Diseño de test suites para REST/GraphQL APIs
+• Validación de contratos de API y schemas
+• Testing de autenticación y autorización
+• Performance testing de endpoints bajo carga
+• Testing de integración entre microservicios
+• Validación de handling de errores y edge cases
+• Security testing específico para APIs
+
+Enfoque: Calidad y confiabilidad de servicios
+            """,
+            
+            'qa_security': """
+Como Security Testing Expert especializado en:
+• Evaluación de vulnerabilidades OWASP Top 10
+• Penetration testing y ethical hacking
+• Testing de autenticación, autorización y sesiones
+• Validación de inputs y protección contra inyecciones
+• Testing de configuraciones de seguridad
+• Evaluación de cifrado y manejo de datos sensibles
+• Compliance con estándares (ISO 27001, SOC 2)
+
+Enfoque: Seguridad y protección de datos
+            """,
+            
+            'qa_performance': """
+Como Performance Testing Specialist especializado en:
+• Load testing y stress testing con herramientas especializadas
+• Análisis de bottlenecks y optimización de performance
+• Testing de escalabilidad y capacity planning
+• Monitoring y profiling de aplicaciones
+• Testing de bases de datos bajo carga
+• Evaluación de CDN y caching strategies
+• SLA validation y performance benchmarking
+
+Enfoque: Performance y escalabilidad
+            """,
+            
+            'qa_mobile': """
+Como Mobile QA Engineer especializado en:
+• Testing en múltiples dispositivos y OS versions
+• Automatización mobile con Appium, Espresso, XCUITest
+• Testing de conectividad y scenarios offline
+• Performance testing específico para mobile
+• Testing de push notifications y deep linking
+• App store compliance y submission testing
+• Battery usage y memory leak testing
+
+Enfoque: Experiencia móvil optimizada
+            """
+        }
+        
+        return contextos.get(tipo_contexto, contextos['qa_manual'])
+    
+    def obtener_templates_documentacion_qa(self):
+        """Templates especializados para documentación QA"""
+        return {
+            'plan_pruebas': """
+# PLAN DE PRUEBAS
+## [Nombre del Proyecto] - Versión [X.X.X]
+
+### 1. INFORMACIÓN GENERAL
+- **Proyecto:** [Nombre]
+- **Versión:** [X.X.X]
+- **Fecha:** [DD/MM/YYYY]
+- **QA Lead:** [Nombre]
+- **Stakeholders:** [Lista]
+
+### 2. OBJETIVOS Y ALCANCE
+**Objetivos:**
+- Validar funcionalidades críticas según AC
+- Asegurar calidad y estabilidad del release
+- Verificar compliance con estándares
+
+**Incluye:**
+- Testing funcional de nuevas features
+- Regression testing de funcionalidades existentes
+- Testing de integración con sistemas externos
+- Performance testing bajo carga normal
+
+**Excluye:**
+- Testing de compatibilidad con browsers legacy
+- Testing manual de funcionalidades automatizadas
+
+### 3. ESTRATEGIA DE TESTING
+**Tipos de Testing:**
+- **Funcional:** Validación de requirements y AC
+- **Regresión:** Automated smoke tests + manual spot checking
+- **Integración:** APIs y flujos end-to-end
+- **Performance:** Load testing de endpoints críticos
+- **Security:** OWASP Top 10 validation
+
+**Criterios de Entrada:**
+- Development completo y unit tests passing
+- Build deployed en ambiente de QA
+- Test data preparada y configurada
+
+**Criterios de Salida:**
+- 100% casos críticos ejecutados y passed
+- 0 defectos críticos o high priority open
+- Performance tests dentro de SLA
+- Sign-off de stakeholders
+
+### 4. RECURSOS Y TIMELINE
+**Team:**
+- QA Lead: [Nombre] - Planning y coordination
+- QA Engineers: [Nombres] - Execution
+- Automation Engineer: [Nombre] - Scripts y CI/CD
+
+**Timeline:**
+- Planning: [fechas]
+- Execution: [fechas]  
+- Regression: [fechas]
+- Sign-off: [fecha]
+
+### 5. ENVIRONMENTS Y HERRAMIENTAS
+**Ambientes:**
+- DEV: Para smoke testing y early validation
+- QA: Para testing completo y automation
+- STAGING: Para final validation y UAT
+
+**Herramientas:**
+- Test Management: [Jira/TestRail/Azure DevOps]
+- Automation: [Selenium/Playwright/Postman]
+- Performance: [JMeter/LoadRunner]
+- Bug Tracking: [Jira/Azure DevOps]
+
+### 6. RIESGOS Y MITIGACIONES
+**Riesgos Identificados:**
+- Timeline ajustado para testing completo
+  - *Mitigación:* Priorizar casos críticos, parallel execution
+- Dependencia de APIs externas inestables
+  - *Mitigación:* Mock services, fallback scenarios
+- Limited access to production-like data
+  - *Mitigación:* Data masking, synthetic data generation
+
+### 7. COMUNICACIÓN Y REPORTING
+**Daily Standups:** 9:00 AM con dev team
+**Status Reports:** Daily a stakeholders
+**Escalation Path:** QA Lead → Dev Lead → Project Manager
+**Final Report:** Comprehensive summary con metrics y recommendations
+            """,
+            
+            'estrategia_pruebas': """
+# ESTRATEGIA DE PRUEBAS
+## [Proyecto] - [Año]
+
+### 1. VISIÓN Y OBJETIVOS
+**Visión de Calidad:**
+Asegurar que el software cumple con los estándares de calidad, 
+performance y seguridad esperados por usuarios y stakeholders.
+
+**Objetivos Estratégicos:**
+- Detectar defectos temprano en el ciclo de desarrollo
+- Asegurar compliance con requirements de negocio
+- Minimizar riesgos de producción
+- Optimizar ROI del esfuerzo de testing
+
+### 2. ENFOQUE METODOLÓGICO
+**Metodología:** [Agile/Waterfall/DevOps]
+**Testing Approach:** [Risk-based/Requirements-based]
+**Automation Strategy:** [Pyramid/Diamond/Trophy]
+
+**Principios:**
+- Shift-left testing approach
+- Risk-based test prioritization  
+- Continuous testing integration
+- Test automation optimization
+
+### 3. NIVELES DE TESTING
+**Unit Testing (Desarrollo)**
+- Responsable: Development team
+- Cobertura objetivo: 80%+
+- Herramientas: [Jest/JUnit/xUnit]
+
+**Integration Testing (QA + Dev)**
+- API testing automatizado
+- Database integration validation
+- Third-party services integration
+
+**System Testing (QA)**
+- End-to-end functional testing
+- Business workflow validation
+- Cross-browser/platform testing
+
+**Acceptance Testing (Business + QA)**  
+- User acceptance scenarios
+- Business rule validation
+- Sign-off criteria verification
+
+### 4. TIPOS DE TESTING ESPECIALIZADOS
+**Performance Testing:**
+- Load testing para usage normal
+- Stress testing para picos de tráfico
+- Herramientas: JMeter, k6, LoadRunner
+
+**Security Testing:**
+- OWASP Top 10 validation
+- Authentication/Authorization testing
+- Data protection compliance
+
+**Accessibility Testing:**
+- WCAG 2.1 compliance
+- Screen reader compatibility
+- Keyboard navigation validation
+
+**Mobile Testing:**
+- Multiple device/OS combinations
+- Native app performance
+- Offline functionality
+
+### 5. AUTOMATIZACIÓN
+**Automation Pyramid:**
+- 70% Unit tests (fast, isolated)
+- 20% Integration tests (API, services)
+- 10% E2E tests (critical user journeys)
+
+**Herramientas:**
+- UI: Selenium, Playwright, Cypress
+- API: Postman, RestAssured, Pact
+- Mobile: Appium, Espresso, XCUITest
+- Performance: JMeter, k6, Artillery
+
+**CI/CD Integration:**
+- Automated test execution en pipelines
+- Quality gates basados en test results
+- Parallel execution para faster feedback
+
+### 6. GESTIÓN DE DEFECTOS
+**Clasificación:**
+- **Crítico:** Bloquea funcionalidad core, security issues
+- **Alto:** Funcionalidad importante afectada
+- **Medio:** Minor functionality issues  
+- **Bajo:** Cosmetic, nice-to-have fixes
+
+**Workflow:**
+New → Assigned → In Progress → Fixed → Verified → Closed
+
+**SLA:**
+- Crítico: 24 horas
+- Alto: 72 horas  
+- Medio: 1 semana
+- Bajo: Next release cycle
+
+### 7. MÉTRICAS Y KPIs
+**Quality Metrics:**
+- Defect density (defects/KLOC)
+- Test coverage percentage
+- Test execution progress
+- Defect escape rate to production
+
+**Efficiency Metrics:**  
+- Test automation coverage
+- Time to execute full regression
+- Mean time to detect defects
+- Cost per defect found
+
+**Delivery Metrics:**
+- Release frequency
+- Lead time for changes
+- Deployment frequency
+- Mean time to recovery
+
+### 8. ROLES Y RESPONSABILIDADES
+**QA Manager:**
+- Strategy definition y oversight
+- Resource allocation y planning
+- Stakeholder communication
+
+**QA Lead:**
+- Test planning y coordination
+- Technical guidance y mentoring
+- Quality gate decisions
+
+**QA Engineers:**
+- Test case design y execution
+- Defect investigation y reporting
+- Test automation development
+
+**Automation Engineers:**
+- Framework development y maintenance
+- CI/CD pipeline integration
+- Performance testing execution
+            """
+        }
+    
+    def generar_casos_desde_api_schema(self, schema_json):
+        """Genera casos de prueba específicos para APIs desde schema JSON"""
+        return f"""
+Basándome en el schema JSON proporcionado, aquí están los casos de prueba para API:
+
+{self.obtener_plantillas_qa_avanzadas()['casos_api']}
+
+CASOS ESPECÍFICOS GENERADOS:
+[Análisis del schema y generación de casos automática]
+        """
+    
+    def generar_sesion_exploratoria_avanzada(self):
+        """Genera una sesión de testing exploratorio estructurada"""
+        return """
+# SESIÓN DE TESTING EXPLORATORIO ESTRUCTURADA
+
+## CHARTER DE LA SESIÓN
+**Objetivo:** Explorar [área/funcionalidad] para descubrir issues relacionados con [usabilidad/performance/seguridad]
+**Duración:** 90 minutos
+**Tester:** [Nombre]
+**Build:** [Versión]
+
+## ESTRATEGIA DE EXPLORACIÓN
+**Técnicas a usar:**
+- Boundary value analysis
+- Error guessing
+- Negative testing scenarios
+- User journey simulation
+- Data variation testing
+
+## ÁREAS DE ENFOQUE
+1. **Happy Path Variations**
+   - Diferentes combinaciones de inputs válidos
+   - Secuencias alternativas de pasos
+   - Timing variations
+
+2. **Edge Cases y Boundaries**
+   - Valores límite en campos numéricos
+   - Strings muy largos o vacíos
+   - Caracteres especiales y Unicode
+
+3. **Error Scenarios**
+   - Conectividad intermitente
+   - Session timeouts
+   - Permisos insuficientes
+   - Recursos no disponibles
+
+4. **Usability Heuristics**
+   - Navigation intuitiveness
+   - Error message clarity
+   - Loading time perception
+   - Mobile responsiveness
+
+## NOTAS DE EXPLORACIÓN
+**[Timestamp] - [Observación]**
+- 10:15 - Botón submit queda disabled después de error de validación
+- 10:23 - Modal no se puede cerrar con ESC key
+- 10:31 - Loading spinner no aparece en operaciones lentas
+
+## BUGS ENCONTRADOS
+**BUG-001:** [Título descriptivo]
+- **Severidad:** Alta
+- **Pasos:** [1, 2, 3...]
+- **Resultado:** [Comportamiento actual]
+- **Esperado:** [Comportamiento correcto]
+
+## PREGUNTAS SURGIDAS
+- ¿Qué pasa si el usuario tiene múltiples sesiones abiertas?
+- ¿El sistema maneja correctamente cambios de timezone?
+- ¿Hay validación del lado servidor para todos los inputs?
+
+## FOLLOW-UP ACTIONS
+- [ ] Crear bug reports para issues encontrados
+- [ ] Proponer casos de prueba para scenarios interesantes
+- [ ] Investigar más a fondo [área específica]
+- [ ] Coordinar con UX team sobre findings de usabilidad
+        """
+    
     def obtener_plantilla_manual_usuario(self):
         """Retorna la plantilla estándar para manuales de usuario"""
         return """
@@ -317,6 +866,9 @@ IMPORTANTE: El manual debe ser descriptivo, educativo y guiar al usuario paso a 
             # Detectar si el usuario solicita un rol específico
             rol_solicitado = self.detectar_rol_solicitado(mensaje)
             
+            # Detectar funcionalidades QA específicas
+            contexto_qa = self.detectar_contexto_qa_especializado(mensaje)
+            
             if tiene_archivos:
                 # Extraer solo la pregunta del usuario (sin el contenido de archivos)
                 pregunta_usuario = mensaje.split("--- ARCHIVOS ADJUNTOS ---")[0].strip()
@@ -333,23 +885,27 @@ IMPORTANTE: El manual debe ser descriptivo, educativo y guiar al usuario paso a 
                                             ['manual de usuario', 'manual usuario', 'documentacion usuario', 'guia usuario', 
                                              'documentation user', 'user manual', 'guia de usuario', 'manual del usuario'])
                 
-                if rol_solicitado:
+                if rol_solicitado or contexto_qa:
                     # Agregar plantillas según lo solicitado
                     plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
                     plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
+                    plantillas_qa = self.obtener_plantillas_qa_avanzadas() if contexto_qa else {}
+                    contexto_especializado = self.generar_contexto_qa_especializado(contexto_qa) if contexto_qa else ""
                     
-                    prompt = f"""Eres {self.nombre}, actuando como {rol_solicitado}.
+                    rol_final = rol_solicitado or f"QA Specialist - {contexto_qa}"
+                    
+                    prompt = f"""Eres {self.nombre}, actuando como {rol_final}.
 
-{self.obtener_contexto_rol(rol_solicitado)}
+{self.obtener_contexto_rol(rol_solicitado) if rol_solicitado else contexto_especializado}
 
-IMPORTANTE: Mantén tu rol de {rol_solicitado} y responde ÚNICAMENTE lo que el usuario solicita.
+IMPORTANTE: Mantén tu rol de {rol_final} y responde ÚNICAMENTE lo que el usuario solicita.
 
 {plantilla_casos}
 {plantilla_manual}
 
 El usuario solicita: "{pregunta_usuario}"
 
-Basándote en tu experiencia como {rol_solicitado} y en su solicitud específica:
+Basándote en tu experiencia como {rol_final} y en su solicitud específica:
 
 Historial reciente:
 {self.obtener_historial_reciente()}
@@ -357,13 +913,13 @@ Historial reciente:
 Contenido del archivo y solicitud:
 {mensaje}
 
-Responde como {rol_solicitado} específicamente a lo solicitado:"""
+Responde como {rol_final} específicamente a lo solicitado:"""
                 else:
                     # Agregar plantillas según lo solicitado
                     plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
                     plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
                     
-                    prompt = f"""Eres {self.nombre}, un chatbot especializado en análisis de documentos y archivos.
+                    prompt = f"""Eres {self.nombre}, un chatbot especializado en análisis de documentos y QA profesional.
 
 IMPORTANTE: Responde ÚNICAMENTE lo que el usuario solicita. No agregues información extra no solicitada.
 
@@ -398,43 +954,91 @@ Responde específicamente a lo solicitado por el usuario:"""
                                             ['manual de usuario', 'manual usuario', 'documentacion usuario', 'guia usuario', 
                                              'documentation user', 'user manual', 'guia de usuario', 'manual del usuario'])
                 
-                if rol_solicitado:
+                if rol_solicitado or contexto_qa:
                     # Agregar plantillas según lo solicitado
                     plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
                     plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
+                    plantillas_qa = self.obtener_plantillas_qa_avanzadas() if contexto_qa else {}
+                    contexto_especializado = self.generar_contexto_qa_especializado(contexto_qa) if contexto_qa else ""
                     
-                    prompt = f"""Eres {self.nombre}, actuando como {rol_solicitado}.
+                    rol_final = rol_solicitado or f"QA Specialist - {contexto_qa}"
+                    
+                    # Agregar plantillas QA específicas si aplica
+                    plantillas_texto = ""
+                    if plantillas_qa:
+                        plantillas_texto = "\n".join([f"=== {k.upper()} ===\n{v}" for k, v in plantillas_qa.items()])
+                    
+                    prompt = f"""Eres {self.nombre}, actuando como {rol_final}.
 
-{self.obtener_contexto_rol(rol_solicitado)}
+{self.obtener_contexto_rol(rol_solicitado) if rol_solicitado else contexto_especializado}
 
 {plantilla_casos}
 {plantilla_manual}
+{plantillas_texto}
 
-Mantén tu rol y personalidad como {rol_solicitado} durante toda la conversación.
+Mantén tu rol y personalidad como {rol_final} durante toda la conversación.
 
 Historial reciente de la conversación:
 {self.obtener_historial_reciente()}
 
 Usuario: {mensaje}
 
-Responde como {rol_solicitado} de manera profesional y experta:"""
+Responde como {rol_final} de manera profesional y experta:"""
                 else:
                     # Agregar plantillas según lo solicitado
                     plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
                     plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
                     
-                    prompt = f"""Eres {self.nombre}, un chatbot amigable y útil. 
-                    Responde de manera natural, conversacional y en español.
+                    # Detectar si es una pregunta simple o técnica
+                    preguntas_simples = ['como estas', 'que tal', 'hola', 'hi', 'buenos dias', 'buenas tardes', 
+                                        'buenas noches', 'como te encuentras', 'que haces', 'adios', 'chao',
+                                        'hasta luego', 'gracias', 'muchas gracias', 'de nada', 'ok', 'vale']
                     
+                    es_pregunta_simple = any(palabra in mensaje.lower() for palabra in preguntas_simples)
+                    
+                    if es_pregunta_simple:
+                        prompt = f"""Eres {self.nombre}, un chatbot amigable especializado en QA y testing.
+                        
+Responde de manera BREVE, NATURAL y AMIGABLE. NO uses formato estructurado para saludos o preguntas simples.
+
+Usuario: {mensaje}
+
+Responde de forma corta y conversacional (máximo 2-3 líneas):"""
+                    else:
+                        prompt = f"""Eres {self.nombre}, un chatbot especializado en QA y testing. 
+                        
+IMPORTANTE: Para consultas técnicas o complejas, responde en formato estructurado:
+
+# 📌 [TÍTULO PRINCIPAL]
+Breve introducción (máximo 2-3 líneas).
+
+## 1️⃣ **Objetivo**
+Descripción del propósito.
+
+## 2️⃣ **Alcance**
+Qué incluye y excluye.
+
+## 3️⃣ **Estructura Detallada**
+- **Punto 1**: Descripción
+- **Punto 2**: Descripción
+
+## 4️⃣ **Recomendaciones**
+Consejos prácticos.
+
+## 5️⃣ **Conclusión**
+Resumen breve.
+
+⚠️ Usa **negrita** para términos clave.
+                        
 {plantilla_casos}
 {plantilla_manual}
-                    
-                    Historial reciente de la conversación:
-                    {self.obtener_historial_reciente()}
-                    
-                    Usuario: {mensaje}
-                    
-                    Responde de manera útil y amigable:"""
+                        
+Historial reciente:
+{self.obtener_historial_reciente()}
+                        
+Usuario: {mensaje}
+                        
+Responde siguiendo el formato estructurado para esta consulta técnica:"""
             
             response = self.modelo_ia.generate_content(prompt)
             return response.text
@@ -442,6 +1046,49 @@ Responde como {rol_solicitado} de manera profesional y experta:"""
         except Exception as e:
             print(f"Error con IA: {e}")
             return self.responder_localmente(mensaje)
+    
+    def detectar_contexto_qa_especializado(self, mensaje):
+        """Detecta contextos QA especializados en el mensaje"""
+        mensaje_lower = mensaje.lower()
+        
+        # Patrones para diferentes especializaciones QA
+        contextos_qa = {
+            "qa_api": [
+                "endpoint", "api testing", "rest api", "json schema", "postman",
+                "test api", "api cases", "swagger", "openapi", "microservices"
+            ],
+            "qa_security": [
+                "security testing", "owasp", "vulnerabilities", "penetration test",
+                "authentication", "authorization", "sql injection", "xss", "csrf"
+            ],
+            "qa_performance": [
+                "performance testing", "load testing", "stress testing", "jmeter",
+                "performance cases", "response time", "throughput", "scalability"
+            ],
+            "qa_mobile": [
+                "mobile testing", "app testing", "android testing", "ios testing",
+                "mobile automation", "appium", "device testing"
+            ],
+            "qa_automatizado": [
+                "test automation", "selenium", "playwright", "cypress", "automation scripts",
+                "automated testing", "test framework", "ci/cd testing"
+            ],
+            "qa_manual": [
+                "manual testing", "exploratory testing", "user acceptance testing",
+                "uat", "manual test cases", "regression testing"
+            ]
+        }
+        
+        for contexto, patrones in contextos_qa.items():
+            for patron in patrones:
+                if patron in mensaje_lower:
+                    return contexto
+        
+        # Si menciona QA en general pero no específico
+        if any(palabra in mensaje_lower for palabra in ["qa", "quality assurance", "testing", "test cases"]):
+            return "qa_manual"  # Default a manual QA
+        
+        return None
     
     def detectar_rol_solicitado(self, mensaje):
         """Detecta si el usuario solicita un rol específico"""
