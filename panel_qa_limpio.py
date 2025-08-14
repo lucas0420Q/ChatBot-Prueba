@@ -11,6 +11,10 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QVBoxLayout, QHBoxLayout,
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
+# Importar configuración de Notion y estilos
+from notion_config_dialog import NotionConfigDialog
+from estilos_ui import obtener_estilos_panel_qa
+
 class PanelQAAvanzado(QDialog):
     """Panel avanzado de opciones QA con mejor visibilidad"""
     

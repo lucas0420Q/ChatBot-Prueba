@@ -2,7 +2,7 @@ import re
 import random
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import google.generativeai as genai
 
 class ChatBot:
@@ -213,6 +213,243 @@ Paso a paso de la prueba:
 
 IMPORTANTE: SIEMPRE usar esta estructura exacta para todos los casos de prueba.
         """
+    
+    def calcular_fechas_proyecto(self, fecha_inicio_str, horas_estimadas, horas_por_dia=8):
+        """Calcula fechas de inicio y fin basado en horas estimadas"""
+        try:
+            # Convertir string a fecha
+            fecha_inicio = datetime.strptime(fecha_inicio_str, "%Y-%m-%d")
+            
+            # Calcular días necesarios (redondeando hacia arriba)
+            dias_necesarios = (horas_estimadas + horas_por_dia - 1) // horas_por_dia
+            
+            # Calcular fecha fin (excluyendo fines de semana)
+            fecha_fin = fecha_inicio
+            dias_agregados = 0
+            
+            while dias_agregados < dias_necesarios:
+                # Si no es fin de semana (0=lunes, 6=domingo)
+                if fecha_fin.weekday() < 5:  # 0-4 son lunes a viernes
+                    dias_agregados += 1
+                if dias_agregados < dias_necesarios:
+                    fecha_fin += timedelta(days=1)
+            
+            return fecha_inicio.strftime("%Y-%m-%d"), fecha_fin.strftime("%Y-%m-%d")
+        except Exception as e:
+            print(f"Error calculando fechas: {e}")
+            return fecha_inicio_str, fecha_inicio_str
+    
+    def obtener_plantilla_casos_prueba_json(self):
+        """Retorna la plantilla JSON para casos de prueba como tareas de proyecto"""
+        return """
+IMPORTANTE: Los casos de prueba en formato JSON deben seguir EXACTAMENTE esta estructura:
+
+```json
+{
+  "proyectos": [
+    {
+      "proyecto_id": 1,
+      "nombre": "[Nombre del proyecto/módulo]",
+      "descripcion": "[Descripción general del proyecto]",
+      "fecha_inicio": "2025-08-04",
+      "epicas": [
+        {
+          "epic_id": 1,
+          "titulo": "[Título de la épica]",
+          "descripcion": "[Descripción de la épica]",
+          "tareas": [
+            {
+              "descripcion": "[Descripción detallada del caso de prueba - qué se va a validar]",
+              "resumen": "[Resumen corto del caso de prueba - título conciso]",
+              "inicio": "[YYYY-MM-DD]",
+              "fin": "[YYYY-MM-DD]",
+              "estado": "Pendiente",
+              "horas_estimadas": [número de horas]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+REGLAS IMPORTANTES PARA EL FORMATO JSON:
+- "proyecto_id" y "epic_id" siempre tienen valor 1
+- "estado" siempre es "Pendiente"
+- Las fechas se calculan automáticamente desde 04/08/2025
+- Se trabajan 8 horas por día (excluyendo fines de semana)
+- "horas_estimadas" debe ser realista para cada caso de prueba (típicamente entre 2-8 horas)
+- "descripcion" debe ser detallada explicando qué se validará
+- "resumen" debe ser un título corto y claro del caso
+
+Ejemplo correcto:
+```json
+{
+  "proyectos": [
+    {
+      "proyecto_id": 1,
+      "nombre": "Testing del Sistema de Mantenimiento",
+      "descripcion": "Casos de prueba para validar la funcionalidad completa del módulo de mantenimiento",
+      "fecha_inicio": "2025-08-04",
+      "epicas": [
+        {
+          "epic_id": 1,
+          "titulo": "Validación de Formularios",
+          "descripcion": "Testing de todos los formularios del sistema",
+          "tareas": [
+            {
+              "descripcion": "Validar que el botón 'Enviar' se muestra correctamente en la interfaz de carga y edición de la planilla de mantenimiento, junto a los botones 'Cancelar' y 'Guardar'. Verificar posición, funcionalidad y comportamiento esperado.",
+              "resumen": "Verificar botón Enviar en formulario",
+              "inicio": "2025-08-04",
+              "fin": "2025-08-04",
+              "estado": "Pendiente",
+              "horas_estimadas": 4
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+        """
+    
+    def generar_casos_dual_formato(self, contenido, casos_originales, proyecto_nombre="Sistema de Testing"):
+        """Genera los casos en formato JSON basado en los casos originales ya creados"""
+        try:
+            fecha_inicio = "2025-08-04"
+            fecha_actual = datetime.strptime(fecha_inicio, "%Y-%m-%d")
+            
+            # Estructurar el JSON
+            proyecto_json = {
+                "proyectos": [
+                    {
+                        "proyecto_id": 1,
+                        "nombre": proyecto_nombre,
+                        "descripcion": f"Casos de prueba para validar la funcionalidad completa del {proyecto_nombre}",
+                        "fecha_inicio": fecha_inicio,
+                        "epicas": [
+                            {
+                                "epic_id": 1,
+                                "titulo": "Validación Funcional Completa",
+                                "descripcion": "Testing de todas las funcionalidades del sistema",
+                                "tareas": []
+                            }
+                        ]
+                    }
+                ]
+            }
+            
+            # Extraer casos de prueba del formato original
+            lineas = casos_originales.split('\n')
+            caso_actual = {}
+            
+            for linea in lineas:
+                linea = linea.strip()
+                
+                if linea.startswith('CP-'):
+                    # Nuevo caso de prueba
+                    if caso_actual and 'titulo' in caso_actual:
+                        # Agregar el caso anterior al JSON
+                        self._agregar_caso_a_json(proyecto_json, caso_actual, fecha_actual)
+                        fecha_actual += timedelta(days=1)
+                        # Saltar fines de semana
+                        while fecha_actual.weekday() > 4:  # 5=sábado, 6=domingo
+                            fecha_actual += timedelta(days=1)
+                    
+                    # Iniciar nuevo caso
+                    caso_actual = {
+                        'titulo': linea.split(':', 1)[1].strip() if ':' in linea else linea
+                    }
+                
+                elif linea.startswith('Descripción:'):
+                    caso_actual['descripcion'] = linea.split(':', 1)[1].strip()
+                
+                elif linea.startswith('Módulo:'):
+                    caso_actual['modulo'] = linea.split(':', 1)[1].strip()
+                
+                elif linea.startswith('Prioridad:'):
+                    prioridad = linea.split(':', 1)[1].strip().lower()
+                    # Asignar horas según prioridad
+                    if prioridad == 'alta':
+                        caso_actual['horas'] = 6
+                    elif prioridad == 'media':
+                        caso_actual['horas'] = 4
+                    else:
+                        caso_actual['horas'] = 2
+            
+            # Agregar el último caso
+            if caso_actual and 'titulo' in caso_actual:
+                self._agregar_caso_a_json(proyecto_json, caso_actual, fecha_actual)
+            
+            return json.dumps(proyecto_json, indent=2, ensure_ascii=False)
+            
+        except Exception as e:
+            print(f"Error generando JSON: {e}")
+            return self._generar_json_ejemplo()
+    
+    def _agregar_caso_a_json(self, proyecto_json, caso, fecha_inicio):
+        """Método auxiliar para agregar un caso al JSON"""
+        try:
+            horas = caso.get('horas', 4)
+            fecha_inicio_str = fecha_inicio.strftime("%Y-%m-%d")
+            
+            # Calcular fecha fin
+            fecha_fin = fecha_inicio
+            if horas > 8:
+                dias_extra = (horas - 8) // 8
+                fecha_fin += timedelta(days=dias_extra)
+                # Saltar fines de semana
+                while fecha_fin.weekday() > 4:
+                    fecha_fin += timedelta(days=1)
+            
+            fecha_fin_str = fecha_fin.strftime("%Y-%m-%d")
+            
+            tarea = {
+                "descripcion": caso.get('descripcion', caso.get('titulo', 'Caso de prueba')),
+                "resumen": caso.get('titulo', 'Caso de prueba'),
+                "inicio": fecha_inicio_str,
+                "fin": fecha_fin_str,
+                "estado": "Pendiente",
+                "horas_estimadas": horas
+            }
+            
+            proyecto_json["proyectos"][0]["epicas"][0]["tareas"].append(tarea)
+            
+        except Exception as e:
+            print(f"Error agregando caso al JSON: {e}")
+    
+    def _generar_json_ejemplo(self):
+        """Genera un JSON de ejemplo en caso de error"""
+        ejemplo = {
+            "proyectos": [
+                {
+                    "proyecto_id": 1,
+                    "nombre": "Sistema de Testing",
+                    "descripcion": "Casos de prueba para validar la funcionalidad del sistema",
+                    "fecha_inicio": "2025-08-04",
+                    "epicas": [
+                        {
+                            "epic_id": 1,
+                            "titulo": "Validación Funcional",
+                            "descripcion": "Testing de funcionalidades principales",
+                            "tareas": [
+                                {
+                                    "descripcion": "Validar funcionalidad principal del sistema",
+                                    "resumen": "Caso de prueba principal",
+                                    "inicio": "2025-08-04",
+                                    "fin": "2025-08-04",
+                                    "estado": "Pendiente",
+                                    "horas_estimadas": 4
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        return json.dumps(ejemplo, indent=2, ensure_ascii=False)
     
     def obtener_plantillas_qa_avanzadas(self):
         """Retorna plantillas especializadas para QA profesional"""
@@ -979,6 +1216,7 @@ IMPORTANTE PARA EL MANUAL:
                 if rol_solicitado or contexto_qa:
                     # Agregar plantillas según lo solicitado
                     plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
+                    plantilla_casos_json = self.obtener_plantilla_casos_prueba_json() if solicita_casos_prueba else ""
                     plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
                     plantillas_qa = self.obtener_plantillas_qa_avanzadas() if contexto_qa else {}
                     contexto_especializado = self.generar_contexto_qa_especializado(contexto_qa) if contexto_qa else ""
@@ -992,9 +1230,12 @@ IMPORTANTE PARA EL MANUAL:
 IMPORTANTE: Mantén tu rol de {rol_final} y responde ÚNICAMENTE lo que el usuario solicita.
 
 {plantilla_casos}
+{plantilla_casos_json}
 {plantilla_manual}
 
 El usuario solicita: "{pregunta_usuario}"
+
+{"INSTRUCCIÓN ESPECIAL PARA CASOS DE PRUEBA: Si el usuario solicita casos de prueba, debes generar AMBOS formatos: el formato original estándar Y el formato JSON. Presenta primero el formato original completo, luego una separación clara, y después el formato JSON completo." if solicita_casos_prueba else ""}
 
 Basándote en tu experiencia como {rol_final} y en su solicitud específica:
 
@@ -1008,6 +1249,7 @@ Responde como {rol_final} específicamente a lo solicitado:"""
                 else:
                     # Agregar plantillas según lo solicitado
                     plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
+                    plantilla_casos_json = self.obtener_plantilla_casos_prueba_json() if solicita_casos_prueba else ""
                     plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
                     
                     prompt = f"""Eres {self.nombre}, un chatbot especializado en análisis de documentos y QA profesional.
@@ -1015,13 +1257,16 @@ Responde como {rol_final} específicamente a lo solicitado:"""
 IMPORTANTE: Responde ÚNICAMENTE lo que el usuario solicita. No agregues información extra no solicitada.
 
 {plantilla_casos}
+{plantilla_casos_json}
 {plantilla_manual}
 
 El usuario solicita: "{pregunta_usuario}"
 
+{"INSTRUCCIÓN ESPECIAL PARA CASOS DE PRUEBA: Si el usuario solicita casos de prueba, debes generar AMBOS formatos: el formato original estándar Y el formato JSON. Presenta primero el formato original completo, luego una separación clara, y después el formato JSON completo." if solicita_casos_prueba else ""}
+
 Basándote en su solicitud específica, puedes:
 - Si pide un RESUMEN: Proporciona solo un resumen claro y conciso
-- Si pide CASOS DE PRUEBA: Genera casos de prueba detallados siguiendo la plantilla
+- Si pide CASOS DE PRUEBA: Genera casos de prueba detallados siguiendo AMBAS plantillas (original y JSON)
 - Si pide MANUAL DE USUARIO: Genera documentación siguiendo la estructura específica
 - Si pide ANÁLISIS: Analiza el contenido según su solicitud
 - Si pide REVISIÓN DE CÓDIGO: Revisa y sugiere mejoras
@@ -1048,6 +1293,7 @@ Responde específicamente a lo solicitado por el usuario:"""
                 if rol_solicitado or contexto_qa:
                     # Agregar plantillas según lo solicitado
                     plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
+                    plantilla_casos_json = self.obtener_plantilla_casos_prueba_json() if solicita_casos_prueba else ""
                     plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
                     plantillas_qa = self.obtener_plantillas_qa_avanzadas() if contexto_qa else {}
                     contexto_especializado = self.generar_contexto_qa_especializado(contexto_qa) if contexto_qa else ""
@@ -1064,8 +1310,11 @@ Responde específicamente a lo solicitado por el usuario:"""
 {self.obtener_contexto_rol(rol_solicitado) if rol_solicitado else contexto_especializado}
 
 {plantilla_casos}
+{plantilla_casos_json}
 {plantilla_manual}
 {plantillas_texto}
+
+{"INSTRUCCIÓN ESPECIAL PARA CASOS DE PRUEBA: Si el usuario solicita casos de prueba, debes generar AMBOS formatos: el formato original estándar Y el formato JSON. Presenta primero el formato original completo, luego una separación clara, y después el formato JSON completo." if solicita_casos_prueba else ""}
 
 Mantén tu rol y personalidad como {rol_final} durante toda la conversación.
 
@@ -1078,6 +1327,7 @@ Responde como {rol_final} de manera profesional y experta:"""
                 else:
                     # Agregar plantillas según lo solicitado
                     plantilla_casos = self.obtener_plantilla_casos_prueba() if solicita_casos_prueba else ""
+                    plantilla_casos_json = self.obtener_plantilla_casos_prueba_json() if solicita_casos_prueba else ""
                     plantilla_manual = self.obtener_plantilla_manual_usuario() if solicita_manual_usuario else ""
                     
                     # Detectar si es una pregunta simple o técnica
@@ -1122,7 +1372,10 @@ Resumen breve.
 ⚠️ Usa **negrita** para términos clave.
                         
 {plantilla_casos}
+{plantilla_casos_json}
 {plantilla_manual}
+
+{"INSTRUCCIÓN ESPECIAL PARA CASOS DE PRUEBA: Si el usuario solicita casos de prueba, debes generar AMBOS formatos: el formato original estándar Y el formato JSON. Presenta primero el formato original completo, luego una separación clara, y después el formato JSON completo." if solicita_casos_prueba else ""}
                         
 Historial reciente:
 {self.obtener_historial_reciente()}
